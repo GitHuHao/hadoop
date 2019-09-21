@@ -3,7 +3,7 @@
 MAC OS + VMvareFusion
 CentOS Linux release 7.3.1611 (Core)
 openjdk version "1.8.0_222"
-hadoop-3.1.2
+hadoop-2.7.2
 ```
 
 # MAC 允许外部安装源
@@ -32,10 +32,10 @@ sudo spctl --master-disable
     # graphical.target: analogous to runlevel 5   图形化运行级别
     ----------------------------------------------
 
-    设置为多用户运行级别(命令行启动)
+设置为多用户运行级别(命令行启动)
     $ systemctl set-default multi-user.target
 
-    查看是否设置成功
+查看是否设置成功
     $ systemctl get-default
 
 sudo免密操作设置
@@ -44,10 +44,13 @@ sudo免密操作设置
     admin   ALL=(ALL)       NOPASSWD: ALL
 
 主机名
+    注： 主机名需要避免 - . ^ ~ 等特殊字符
     $ sudo vim /etc/hostname
-    hadoop.01
+    ----------------------------------------------
+    hadoop01
+    ----------------------------------------------
 
-    $ hostname hadoop.01
+    $ hostname hadoop01
 
 网络
     $ sudo vim /etc/sysconfig/network-scripts/ifcfg-ens33
@@ -75,17 +78,26 @@ sudo免密操作设置
     DNS1="8.8.8.8"
     DNS2="114.114.114.114"
     ----------------------------------------------
-
+    
     sudo systemctl restart network
-
+    
     ping -c 3 www.baidu.com
-
+    
     ping 192.168.1.7 与宿主机互访测试
+
+防火墙
+    关闭防火墙
+    查看状态
+    $ sudo systemctl status firewalld.service
+    停止服务
+    $ sudo systemctl stop firewalld.service
+    禁止开机启动
+    $ sudo systemctl disable firewalld.service
 
 hosts主机名 IP 映射
     $ sudo vim /etc/hosts
     ----------------------------------------------
-    192.168.152.102 hadoop.01
+    192.168.152.102 hadoop01
     ----------------------------------------------
 
 ssh免密登录
@@ -96,9 +108,9 @@ ssh免密登录
     $ ssh-copy-id -i admin@192.168.1.7
 
     宿主机免密登录测试
-    $ ssh admin@hadoop.01
+    $ ssh admin@hadoop01
 
-使用 163 yum 源，替换原生安装源
+163镜像yum源
     $ wget http://mirrors.163.com/.help/CentOS7-Base-163.repo
     $ sudo mv /etc/yum.repos.d/CentOS-Base.repo  /etc/yum.repos.d/CentOS-Base.repo.bk
     $ sudo cp CentOS7-Base-163.repo /etc/yum.repos.d/CentOS-Base.repo
@@ -109,87 +121,91 @@ ssh免密登录
     $ sudo yum install mlocate
     $ updatedb
 
-
 ```
 
 # java 环境
 ```
-    查看是否安装了原生 java 相关环境，如果安装，则卸载
+查看是否安装了原生 java 相关环境，如果安装，则卸载
     $ rpm -qa |grep java
     $ rpm -qa | grep java | xargs sudo rpm -e --nodeps
-
+    
     $ rpm -qa |grep jdk
     $ rpm -qa | grep jdk | xargs sudo rpm -e --nodeps
-
+    
     $ rpm -qa |grep gcj
     $ rpm -qa | grep gcj | xargs sudo rpm -e --nodeps
 
-    安装 openjdk
-    $ sudo yum install java-1.8.0-openjdk* -y
+安装 jdk-8u144-linux-x64.tar.gz
+    下载 https://pan.baidu.com/s/1qcxyMwX_2O6uPqPEggnz-Q my2f
+    $ sudo tar -zxvf jdk-8u144-linux-x64.tar.gz -C /opt/softwares/
 
-    查看 java版本
-    $ java -version
-    openjdk version "1.8.0_222"
-
-    $ locate rt.jar
-    /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64/jre/lib/rt.jar
-
-    对所有用户适用
+注册到环境
     $ sudo vim /etc/profile
     ----------------------------------------------
     # java
-    export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64/jre"
-    export CLASSPATH=.:$JAVA_HOME/lib/rt.jar
+    export JAVA_HOME="/opt/softwares/jdk1.8.0_144"
+    export JRE_HOME="$JAVA_HOME/jre"
+    export CLASSPATH=".:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib/rt.jar"
     export PATH=$PATH:$JAVA_HOME/bin
     ----------------------------------------------
     $ source /etc/bashrc
-
+    
     对所有 shell 脚本适用
     $ sudo vim /etc/bashrc
     ----------------------------------------------
     # java
-    export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64/jre"
-    export CLASSPATH=.:$JAVA_HOME/lib/rt.jar
+    export JAVA_HOME="/opt/softwares/jdk1.8.0_144"
+    export JRE_HOME="$JAVA_HOME/jre"
+    export CLASSPATH=".:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib/rt.jar"
     export PATH=$PATH:$JAVA_HOME/bin
     ----------------------------------------------
     $ source /etc/bashrc
 
+查看版本
+    # java -version
+    ----------------------------------------------
+    java version "1.8.0_144"
+    Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
+    ----------------------------------------------
 ```
 
-# hadoop(单节点)
+# hadoop单节点测试（与配置无关）
 ```
-$ sudo mkdir /opt/softwares /opt/downloads
-$ sudo chown -R admin:admin /opt/softwares /opt/downloads
-$ cd /opt/downloads/
+目录
+    $ sudo mkdir /opt/softwares /opt/downloads
+    $ sudo chown -R admin:admin /opt/softwares /opt/downloads
+    $ cd /opt/downloads/
 
 二进制
-wget -o hadoop-3.1.2.tar.gz https://www-us.apache.org/dist/hadoop/common/hadoop-3.1.2/hadoop-3.1.2.tar.gz
+    wget -o hadoop-2.7.2.tar.gz https://www-us.apache.org/dist/hadoop/common/hadoop-2.7.2/hadoop-2.7.2.tar.gz
 
 源码
-wget -o hadoop-3.1.2-src.tar.gz https://www-us.apache.org/dist/hadoop/common/hadoop-3.1.2/hadoop-3.1.2-src.tar.gz
+    wget -o hadoop-2.7.2-src.tar.gz https://www-us.apache.org/dist/hadoop/common/hadoop-2.7.2/hadoop-2.7.2-src.tar.gz
 
-tar -zxvf hadoop-3.1.2.tar.gz
-
-mv hadoop-3.1.2 /opt/softwares
-
-$ sudo vim /etc/profile
-----------------------------------------------
-# mr
-export HADOOP_HOME="/opt/softwares/hadoop-3.1.2"
-export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
-----------------------------------------------
-source /etc/profile
-
-$ sudo vim /etc/bashrc
-----------------------------------------------
-# mr
-export HADOOP_HOME="/opt/softwares/hadoop-3.1.2"
-export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
-----------------------------------------------
-source /etc/profile
+安装
+    tar -zxvf hadoop-2.7.2.tar.gz
+    
+    mv hadoop-2.7.2 /opt/softwares
+    
+    $ sudo vim /etc/profile
+    ----------------------------------------------
+    # mr
+    export HADOOP_HOME="/opt/softwares/hadoop-2.7.2"
+    export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+    ----------------------------------------------
+    source /etc/profile
+    
+    $ sudo vim /etc/bashrc
+    ----------------------------------------------
+    # mr
+    export HADOOP_HOME="/opt/softwares/hadoop-2.7.2"
+    export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+    ----------------------------------------------
+    source /etc/profile
 
 目录结构
-$ ll /opt/softwares/hadoop-3.1.2/
+    $ ll /opt/softwares/hadoop-2.7.2/
     bin 二进制命令
     etc 配置文件
     include 库函数
@@ -203,67 +219,70 @@ $ ll /opt/softwares/hadoop-3.1.2/
 
 ```
 
-grep 测试
+# grep 测试
 ```
-$ sudo mkdir -p  /opt/apps/mr/grep/in
-
-$ sudo chown -R admin:admin /opt/apps
-
-$ sudo updatedb
-
-$ locate core-site.xml
-$ cp /opt/softwares/hadoop-3.1.2/etc/hadoop/core-site.xml /opt/apps/mr/grep/in
+目录
+    $ sudo mkdir -p  /opt/apps/mr/grep/in
+    
+    $ sudo chown -R admin:admin /opt/apps
+    
+    $ sudo updatedb
+    
+    $ locate core-site.xml
+    $ cp /opt/softwares/hadoop-2.7.2/etc/hadoop/core-site.xml /opt/apps/mr/grep/in
 
 正则搜索 /opt/apps/mr/grep/in/*文件内容，找出包含 www 的行数
-$ cd /opt/softwares/hadoop-3.1.2
-$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.2.jar grep /opt/apps/mr/grep/in/* /opt/apps/mr/grep/out 'www[a-z.]+'
+    $ cd /opt/softwares/hadoop-2.7.2
+    $ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar grep /opt/apps/mr/grep/in/* /opt/apps/mr/grep/out 'www[a-z.]+'
 
-
-$ ll /opt/apps/mr/grep/out/
-----------------------------------------------
--rw-r--r-- 1 admin admin 17 9月  15 23:00 part-r-00000
--rw-r--r-- 1 admin admin  0 9月  15 23:00 _SUCCESS  空白文件，标记 MR 执行成功
-----------------------------------------------
-
-$ cat /opt/apps/mr/grep/out/part-r-00000
-----------------------------------------------
-1	www.apache.org
-----------------------------------------------
+检测
+    $ ll /opt/apps/mr/grep/out/
+    ----------------------------------------------
+    -rw-r--r-- 1 admin admin 17 9月  15 23:00 part-r-00000
+    -rw-r--r-- 1 admin admin  0 9月  15 23:00 _SUCCESS  空白文件，标记 MR 执行成功
+    ----------------------------------------------
+    
+    $ cat /opt/apps/mr/grep/out/part-r-00000
+    ----------------------------------------------
+    1	www.apache.org
+    ----------------------------------------------
 ```
 
-wordcount 测试
+# wordcount 测试
 ```
-$ mkdir -p  /opt/apps/mr/wc/in/
+目录
+    $ mkdir -p  /opt/apps/mr/wc/in/
+    
+    $ vim /opt/apps/mr/wc/in/words.txt
+    ----------------------------------------------
+    aa bb cc
+    aa a bb
+    s dd cc
+    ----------------------------------------------
+    
+    $ cd /opt/softwares/hadoop-2.7.2
 
-$ vim /opt/apps/mr/wc/in/words.txt
-----------------------------------------------
-aa bb cc
-aa a bb
-s dd cc
-----------------------------------------------
+统计单词出现次数
+    $ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar wordcount /opt/apps/mr/wc/in/* /opt/apps/mr/wc/out
 
-$ cd /opt/softwares/hadoop-3.1.2
-
-# 统计单词出现次数
-$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.2.jar wordcount /opt/apps/mr/wc/in/* /opt/apps/mr/wc/out
-
-$ ll /opt/apps/mr/wc/out/
-----------------------------------------------
--rw-r--r-- 1 admin admin 28 9月  15 23:10 part-r-00000
--rw-r--r-- 1 admin admin  0 9月  15 23:10 _SUCCESS   空白文件，标记 MR 执行成功
-----------------------------------------------
-
-$ cat /opt/apps/mr/wc/out/part-r-00000
-----------------------------------------------
-a	1
-aa	2
-bb	2
-cc	2
-dd	1
-s	1
-----------------------------------------------
-
+检测
+    $ ll /opt/apps/mr/wc/out/
+    ----------------------------------------------
+    -rw-r--r-- 1 admin admin 28 9月  15 23:10 part-r-00000
+    -rw-r--r-- 1 admin admin  0 9月  15 23:10 _SUCCESS   空白文件，标记 MR 执行成功
+    ----------------------------------------------
+    
+    $ cat /opt/apps/mr/wc/out/part-r-00000
+    ----------------------------------------------
+    a	1
+    aa	2
+    bb	2
+    cc	2
+    dd	1
+    s	1
+    ----------------------------------------------
 ```
+
 
 
 
