@@ -98,3 +98,12 @@ $ hdfs dfs -count /dir
 设置文件副本数（节点退役时，如果副本数少于约定最小副本数，无法退役，需要调整副本数设置，才能完成退役）
 $ hdfs dfs -setrep num file
 ```
+
+API 测试[!hdfs-practice/src/hadoop/TestHDFS]
+```
+jar: hadoop-2.7.2-src 
+    source 
+    test 
+    list
+ 
+```
