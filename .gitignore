@@ -1,2 +1,6 @@
 .idea
-hadoop.iml
+
+.DS_Store
+hdfs-practice/lib/
+hdfs-practice/data/
+hdfs-practice.iml

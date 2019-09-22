@@ -314,5 +314,60 @@ lrwxrwxrwx 1 root root      18 9月  21 23:07 libsnappy.so.1 -> libsnappy.so.1.3
 -rwxr-xr-x 1 root root  258616 9月  21 23:07 libsnappy.so.1.3.0
 ----------------------------------------------
 
+备份
+# mkdir hadoop-dist/target/hadoop-2.7.2.tar.gz compiled/hadoop-2.7.2_snappy.tar.gz
+
+# cp hadoop-2.7.2_snappy.tar.gz
+```
+
+替换集群
+```
+权限 
+admin 身份执行
+
+备份原应用
+$ xcall mv /opt/softwares/hadoop-2.7.2 /opt/softwares/hadoop-2.7.2.bk
+
+解压
+$ tar -zxvf hadoop-2.7.2_snappy.tar.gz -C /opt/softwares/
+
+$ cd /opt/softwares/hadoop-2.7.2
+
+复用配置
+$ rm -rf etc/hadoop/{core-site.xml,hdfs-site.xml,mapred-site.xml,yarn-site.xml,slaves}
+$ cp ../hadoop-2.7.2.bk/etc/hadoop/{core-site.xml,hdfs-site.xml,mapred-site.xml,yarn-site.xml,slaves} etc/hadoop
+
+复用启动脚本
+$ cp ../hadoop-2.7.2.bk/sbin/{startAll.sh,stopAll.sh} sbin
+
+$ mkdir data/tmp
+
+格式化
+$ hdfs namenode -format
+
+启动集群
+$ ./sbin/startAll.sh
+
+grep 测试
+$ hadoop fs -mkdir -p /apps/mr/grep/in
+$ hadoop fs -put ../../apps/mr/grep/in/* /apps/mr/grep/in/
+$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar grep /apps/mr/grep/in /apps/mr/grep/out 'www[a-z.]+'
+
+wordcount 测试
+$ hadoop fs -mkdir -p /apps/mr/wc/in
+$ hadoop fs -put ../../apps/mr/wc/in/* /apps/mr/wc/in/  
+$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar wordcount /apps/mr/wc/in /apps/mr/wc/out
+ 
+web 页面
+hdfs 
+http://hadoop01:50070/
+    
+yarn
+http://hadoop03:8088/
+```
+
+压缩测试
+```
+略 
 ```
 
