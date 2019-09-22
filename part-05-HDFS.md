@@ -99,7 +99,7 @@ $ hdfs dfs -count /dir
 $ hdfs dfs -setrep num file
 ```
 
-API 测试[!hdfs-practice/src/hadoop/TestHDFS]
+[API 测试](hdfs-practice/src/hadoop/TestHDFS.java)
 ```
 jar: hadoop-2.7.2-src 
     source 
