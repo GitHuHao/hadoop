@@ -127,3 +127,177 @@ hdfs写数据
 目前磁盘传输速率约为 100M/s, 所以块大小应该在 100M/s * 1s = 100M 附近，且为 2^n 最为适宜，因此默认块大小 128M，实际存储时，最好略小于此阈值
 ```
 ![upload to hdfs](image/hdfs写数据流程.png)
+
+hdfs读数据
+```
+ 1) 客户端向 namenode 发生下载数据请求(/dir/xxx_000),Nn节点查询反馈回一串dn-list 列表[blk-1[dn1,dn2,dn..], blk-2[db1,dn2...], blk-n[dn...]...];
+ 2) 客户端开始下载第一个数据块blk-1[dn1,dn2...], 如果处于某个给定的dn节点上,优先从此dn节点下载(就近原则),否则随机下载;
+ 3) 客户端下载完第一个数据块blk-1,开始下载第二个blk2,并遵循2)相同的"就近优先,其次随机"的原则;
+ 4) 重复上述2)-3)操作,直至下载完所有数据,下载期间所有的blk数据库可以被同时 或 逐个下载,适dn节点与客户端环境而定,所有数据块在客户端内存完成数据合并,
+ 然后持久化存储到磁盘,就完成了从hdfs下载指定资源的流程.
+```
+![download from hdfs](image/hdfs读数据流程.png)
+
+[hdfs 数据一致性](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/TestHDFS.java)
+```
+详见 checkConsistency 注释
+```
+
+机架感知
+```
+网络拓扑
+    在本地网络中，两个节点被称为“彼此近邻”是什么意思？在海量数据处理中，其主要限制因素是节点之间数据的传输速率——带宽很稀缺。这里的想法是将两个节点间的带宽作为距离的衡量标准。
+     
+节点距离：
+    两个节点到达最近的共同祖先的距离总和。 
+    例如，假设有数据中心d1机架r1中的节点n1。该节点可以表示为/d1/r1/n1。利用这种标记，这里给出四种距离描述。 
+    Distance(/d1/r1/n1, /d1/r1/n1)=0（同一节点上的进程） 
+    Distance(/d1/r1/n1, /d1/r1/n2)=2（同一机架上的不同节点） 
+    Distance(/d1/r1/n1, /d1/r3/n2)=4（同一数据中心不同机架上的节点） 
+    Distance(/d1/r1/n1, /d2/r4/n2)=6（不同数据中心的节点） 
+    
+官网文档
+    http://hadoop.apache.org/docs/r2.7.2/hadoop-project-dist/hadoop-common/RackAwareness.html
+
+block存储datanode筛选原则
+低版本hadoop
+    当上传文件的 client 为 dn 节点之一时，block的第一个副本会优先选在 client 所在节点(否则随机)，第二个副本选在与此 client 不同机架的任意节点上，第三个副本选在与第二个副本相同机架不同的随机节点上；
+    
+hadoop2.7.2
+    当上传文件的 client 为 dn 节点之一时，block的第一、二个副本会优先选在 client 所在节点(否则随机)，第三个副本选在与此 client 不同机架的任意节点上；
+
+```
+![hdfs rack awareness](image/hdfs机架感知.png)
+![lower hadoop verson rack awareness](image/低版本hadoop机架.png)  ![hadoop2.7.2 rack awareness](image/高版本hadoop机架.png) 
+
+自定义机架感知
+```
+机器环境
+    关闭旧集群
+    $ cd /opt/softwares/hadoop-2.7.2
+    $ sbin/stopAll.sh
+    
+    克隆 hadoop03节点 创建 hadoop04 hadoop05
+    修改主机名
+    # vim /etc/hostname
+    
+    添加 IP 主机名映射
+    # vim /etc/hosts
+    
+    修改 IP
+    # vim /etc/sysconfig/network-scripts/ifcfg-ens33
+    
+    重启机器
+    # reboot
+    
+    修改 root的 ssh 秘钥
+    # rm -rf /root/.ssh
+    # ssh-keygen -t rsa
+    
+    修改 admin的 ssh 秘钥，并增加免密登录节点
+    $ rm -rf ~/.ssh
+    $ ssh-keygen -t rsa
+    $ ssh-copy-id -i admin@hadoop0x
+    
+    修改辅助脚本，添加新节点
+    $ sudo vim /usr/local/bin/xsync
+    $ sudo vim /usr/local/bin/xcall
+    
+    扩充权限
+    $ sudo chmod 755 -R /usr/local/bin
+    
+    同步更新
+    $ xsync /usr/local/bin/{xsync,xcall}
+    
+集群规划
+    192.168.152.102 hadoop01    rack1 namenode datanode nodemanager
+    192.168.152.103 hadoop02    rack1 secondarynamenoe datanode nodemanager historyserver
+    192.168.152.104 hadoop03    rack2 yarnmanager datanode nodemanager
+    192.168.152.105 hadoop04    rack2 datanode nodemanager
+    192.168.152.106 hadoop05    rack3 datanode nodemanager
+
+添加 hadoop04.hadoop05 到 slaves
+$ cd /opt/softwares/hadoop-2.7.2
+$ vim etc/hadoop/slaves
+$ xsync etc/hadoop/slaves
+
+启动集群
+$ ./sbin/startAll.sh
+----------------------------------------------
+>>> ssh admin@hadoop01 "cd /opt/softwares/hadoop-2.7.2; jps"
+3764 NodeManager
+3461 NameNode
+4166 Jps
+
+>>> ssh admin@hadoop02 "cd /opt/softwares/hadoop-2.7.2; jps"
+3285 NodeManager
+3207 SecondaryNameNode
+3100 DataNode
+3695 Jps
+
+>>> ssh admin@hadoop03 "cd /opt/softwares/hadoop-2.7.2; jps"
+3245 ResourceManager
+3373 NodeManager
+3886 Jps
+
+>>> ssh admin@hadoop04 "cd /opt/softwares/hadoop-2.7.2; jps"
+3762 Jps
+3383 NodeManager
+3276 DataNode
+
+>>> ssh admin@hadoop05 "cd /opt/softwares/hadoop-2.7.2; jps"
+3792 Jps
+3449 NodeManager
+3342 DataNode
+----------------------------------------------
+
+WEB页面查看（之前存储的文件，部分 block 已经自动负载到 hadoop04 hadoop05 节点存储）
+http://hadoop01:50070/explorer.html#/apps/test
+
+机架路由代码
+hadoop/hdfs-practice/src/com/bigdata/hadoop/AutoTack.java
+
+打包
+    File(Project Structure) > 
+    ProjectSettings(Artifacts) > 
+    "➕"Jar(from modules) > 
+    确认页从"Output layout"删除依赖，只保留"complie output" > 
+    Build(build artifacts) 打包
+    
+上传 jar
+$ cp hdfs-practice.jar  share/hadoop/common/
+
+修改配置
+$ vim /etc/hadoop/core-site.xml
+----------------------------------------------
+<property>
+	<!-- 注册自定义的机架路由 core-default.xml中默认是 net.topology.node.switch.mapping.impl -->
+	<name>net.topology.node.switch.mapping.impl</name>
+	<value>com.bigdata.hadoop.AutoTack</value>
+</property>
+----------------------------------------------
+
+分发(不能直接分发整个 /opt/softwares/hadoop-2.7.2 目录)
+xsync  share/hadoop/common/hdfs-practice.jar /etc/hadoop/core-site.xml
+
+刷新集群
+    $ hdfs dfsadmin -refreshNodes
+    $ yarn rmadmin -refreshNodes
+
+查看集群
+$ xcall jps
+
+上传测试
+$ hadoop fs -rm -r /apps/test/hadoop-2.7.2.tar.gz
+$ hadoop fs -put ../../downloads/hadoop-2.7.2.tar.gz /apps/test
+
+查看块存储信息
+
+hadoop-2.7.2.tar.gz
+    block0 [hadoop01 hadoop02 hadoop05]
+    block1 [hadoop01 hadoop02 hadoop04]
+
+符合预期
+    client为 dn 节点时，文件所有块的第一、二副本存储在相同机架不同节点，其他副本随机
+
+```

@@ -1,6 +1,5 @@
 .idea
-
 .DS_Store
-hdfs-practice/lib/
-hdfs-practice/data/
 hdfs-practice.iml
+hdfs-practice/lib/
+hdfs-practice/out/

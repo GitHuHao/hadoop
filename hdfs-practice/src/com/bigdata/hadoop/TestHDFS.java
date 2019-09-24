@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -328,6 +329,31 @@ public class TestHDFS {
                 }
             }
 
+        }
+    }
+
+    @Test
+    public void checkConsistency(){
+        Configuration conf = new Configuration();
+        FileSystem fs = null;
+        FSDataOutputStream fdos = null;
+
+        try {
+            fs = FileSystem.get(new URI("hdfs://hadoop01:9000"),conf,"admin");
+            fdos = fs.create(new Path("/apps/test/3.txt")); // 创建了空文件
+            fdos.write("from java client\n".getBytes()); // 写出了数据，但尚未完成所有块咋 dn列表的同步，文件仍未空
+            fdos.hflush(); // 刷写完毕，块文件在所有 dn 节点完成同步，此时数据是完整可见的，但 web 页面 block-info 不可见
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(fdos); // 关闭输出流，nn 节点元数据维护完毕，此时 web 页面 block-info 可见
+            if(fs!=null){
+                try {
+                    fs.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
