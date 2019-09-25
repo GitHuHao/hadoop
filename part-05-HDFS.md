@@ -167,8 +167,8 @@ hadoop2.7.2
     当上传文件的 client 为 dn 节点之一时，block的第一、二个副本会优先选在 client 所在节点(否则随机)，第三个副本选在与此 client 不同机架的任意节点上；
 
 ```
-![hdfs rack awareness](image/hdfs机架感知.png)
-![lower hadoop verson rack awareness](image/低版本hadoop机架.png)  ![hadoop2.7.2 rack awareness](image/高版本hadoop机架.png) 
+![hdfs rack awareness](image/机架拓扑.png)
+![lower hadoop verson rack awareness](image/低版本机架感知.png)  ![hadoop2.7.2 rack awareness](image/高版本机架感知.png) 
 
 自定义机架感知
 ```
