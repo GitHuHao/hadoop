@@ -299,5 +299,940 @@ hadoop-2.7.2.tar.gz
 
 符合预期
     client为 dn 节点时，文件所有块的第一、二副本存储在相同机架不同节点，其他副本随机
+```
+
+namenode & secondarynamenode checkpoint 工作机制
+``` 
+namenode 
+1.集群初始化时，创建编辑日志 edits.inprocess 和 镜像文件 fsimage ,hdfs 工作时 完整文件，按默认块大小分割成若干 block，每个 block又遵循最小副本数原则，冗余存储到 dn节点。
+dn节点存储块默认大小 128M，nn节点存储块元数据文件为 150byte；
+2.某次集群重启完毕，namenode 会获取最近的镜像文件加载到内存，然后以其为基础执行最近编辑日志，完成元数据回放操作；
+3.客户端请求对文件进行操作，引起元数据的变更时，nn先将变更记录到当前正在编辑的编辑日志 edits.inprocess，然后对内存完整元数据执行操作；
+4.存储在当前正在编辑日志中的元数据操作，会定期由 sn 节点 通过 checkpoint 机制合并到最新的 fsimage 中，实现元数据结果备份。
+
+secondary namenode
+1.所有到达 nn节点元数据变更请求，先执行预写入日志记录到编辑日志 edits.inprocess，然后对内存中维护的全量元数据进行变更，nn节点自身不会将编辑日志变更合并到 镜像文件fsimage，
+承担此项 元数据结果 checnpoint 操作的时 sn节点，集群中在未指定 sn节点部署机器是，回默认在 nn 相同节点选择一台承担 sn 角色，此会导致内存需求翻倍，因此实际部署时，通常将这避免将 nn,sn 部署在同一台机器；
+2.sn 触发 checkpoint 操作默认机制时，定时 3600 秒执行，或 监控到 编辑日志edits.inprocess中最近连续操作超过百万次，就执行 checkpoint；
+3.sn 定期询问 nn 是否需要执行 checkpoint 操作，当满足 上述触发条件时，nn 反馈同意执行 checkpoint，sn 会向 nn 申请执行 checkpoint, nn先滚动编辑日志 edits.inprocess(原来的带上操作编号重命名，然后创建新的同名文件),
+然后通知 sn 可以执行 checkpoint;
+4.sn 从 nn 拷贝上次 checkpoint 的 fsimage 文件，和刚滚动的 editis.xxx 到本地，然后基于编辑日志editis.xxx 回放变更操作，将元数据更新合并到 fsimage 生成新的 fsimage.checkpoint 文件，然后通知 nn checkpoint 结束，
+可以拉取 fsimage.checkpoint了；
+5.nn拷贝sn的fsimage.checkpoint 文件到本地，将先前 fsimage 文件重命名，带上操作编号，然后将拷贝过来的simage.checkpoint文件重命名为 fsimage ,至此一次 checkpoint 操作完毕。
+```
+![hdfs checkpoint](image/hdfs-checkpoint机制.png)
+
+相关参数
+```
+fsimage元数据镜像文件最多维持版本个数(保存最近的几次 checkpoint 文件，最新损坏后，可以重上一次 checkpoint 回放)
+$ vim etc/hadoop/core-site.xml
+----------------------------------------------
+<property>
+    <name>dfs.namenode.num.checkpoints.retained</name>
+    <value>2</value>
+</property>
+----------------------------------------------
+
+元数据编辑日志相关参数
+edits.xxx 编辑日志最多版本数
+$ vim etc/hadoop/core-site.xml
+----------------------------------------------
+<property>
+    <name>dfs.namenode.num.extra.edits.retained</name>
+    <value>1000000</value>
+</property>
+----------------------------------------------
+
+checkpoint 相关参数
+----------------------------------------------
+<!--最长chkp间隔,单位:秒-->
+<property>
+ <name>dfs.namenode.checkpoint.period</name>
+ <value>3600</value>
+</property>
+
+<!-- 最长间隔内，提前触发chkp的条数：编辑超过10^6次 -->
+<property>
+ <name>dfs.namenode.checkpoint.txns</name>
+ <value>1000000</value>
+</property>
+
+<!-- 编辑次数轮询检测时间间隔（每60秒）检测一次提前触发条件是否满足-->
+<property>
+ <name>dfs.namenode.checkpoint.check.period</name>
+ <value>60</value>
+ <description>The SecondaryNameNode and CheckpointNode will poll the NameNode
+ every 'dfs.namenode.checkpoint.check.period' seconds to query the number
+ of uncheckpointed transactions.
+ </description>
+</property>
+
+<!-- chkp 失败重试次数 -->
+<property>
+ <name>dfs.namenode.checkpoint.max-retries</name>
+ <value>3</value>
+</property>
+----------------------------------------------
+```
+![hdfs 编辑日志与镜像文件](image/编辑日志镜与像文件.png)
+
+强制执行 checkpoint
+``` 
+$ hdfs dfsadmin -rollEdits
+----------------------------------------------
+Successfully rolled edit logs.
+New segment starts at txid 24
+----------------------------------------------
+```
+![hdfs 手动滚动编辑日志](image/手动滚动编辑日志.png)
+
+fsimage 导出
+``` 
+$ hdfs oiv -p XML -i data/tmp/dfs/name/current/fsimage_0000000000000000009 -o fsimage09.xml
+$ cat fsimage09.xml 
+----------------------------------------------
+<?xml version="1.0"?>
+<fsimage><NameSection>
+<genstampV1>1000</genstampV1><genstampV2>1000</genstampV2><genstampV1Limit>0</genstampV1Limit><lastAllocatedBlockId>1073741824</lastAllocatedBlockId><txid>9</txid></NameSection>
+<INodeSection><lastInodeId>16391</lastInodeId><inode><id>16385</id><type>DIRECTORY</type><name></name><mtime>1569635546330</mtime><permission>admin:supergroup:rwxr-xr-x</permission><nsquota>9223372036854775807</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16386</id><type>DIRECTORY</type><name>tmp</name><mtime>1569635546339</mtime><permission>admin:supergroup:rwxrwx---</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16387</id><type>DIRECTORY</type><name>hadoop-yarn</name><mtime>1569635546339</mtime><permission>admin:supergroup:rwxrwx---</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16388</id><type>DIRECTORY</type><name>staging</name><mtime>1569635546339</mtime><permission>admin:supergroup:rwxrwx---</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16389</id><type>DIRECTORY</type><name>history</name><mtime>1569635546437</mtime><permission>admin:supergroup:rwxrwx---</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16390</id><type>DIRECTORY</type><name>done</name><mtime>1569635546340</mtime><permission>admin:supergroup:rwxrwx---</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+<inode><id>16391</id><type>DIRECTORY</type><name>done_intermediate</name><mtime>1569635546437</mtime><permission>admin:supergroup:rwxrwxrwt</permission><nsquota>-1</nsquota><dsquota>-1</dsquota></inode>
+</INodeSection>
+<INodeReferenceSection></INodeReferenceSection><SnapshotSection><snapshotCounter>0</snapshotCounter></SnapshotSection>
+<INodeDirectorySection><directory><parent>16385</parent><inode>16386</inode></directory>
+<directory><parent>16386</parent><inode>16387</inode></directory>
+<directory><parent>16387</parent><inode>16388</inode></directory>
+<directory><parent>16388</parent><inode>16389</inode></directory>
+<directory><parent>16389</parent><inode>16390</inode><inode>16391</inode></directory>
+</INodeDirectorySection>
+<FileUnderConstructionSection></FileUnderConstructionSection>
+<SnapshotDiffSection><diff><inodeid>16385</inodeid></diff></SnapshotDiffSection>
+<SecretManagerSection><currentId>0</currentId><tokenSequenceNumber>0</tokenSequenceNumber></SecretManagerSection><CacheManagerSection><nextDirectiveId>1</nextDirectiveId></CacheManagerSection>
+</fsimage>
+----------------------------------------------
+```
+
+editis 编辑日志导出
+``` 
+$ hdfs oev -p XML -i data/tmp/dfs/name/current/edits_0000000000000000001-0000000000000000009 -o edits1-9.xml
+$ cat edits1-9.xml 
+----------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<EDITS>
+  <EDITS_VERSION>-63</EDITS_VERSION>
+  <RECORD>
+    <OPCODE>OP_START_LOG_SEGMENT</OPCODE>
+    <DATA>
+      <TXID>1</TXID>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>2</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16386</INODEID>
+      <PATH>/tmp</PATH>
+      <TIMESTAMP>1569635546330</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>504</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>3</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16387</INODEID>
+      <PATH>/tmp/hadoop-yarn</PATH>
+      <TIMESTAMP>1569635546339</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>504</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>4</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16388</INODEID>
+      <PATH>/tmp/hadoop-yarn/staging</PATH>
+      <TIMESTAMP>1569635546339</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>504</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>5</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16389</INODEID>
+      <PATH>/tmp/hadoop-yarn/staging/history</PATH>
+      <TIMESTAMP>1569635546339</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>504</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>6</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16390</INODEID>
+      <PATH>/tmp/hadoop-yarn/staging/history/done</PATH>
+      <TIMESTAMP>1569635546340</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>504</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_MKDIR</OPCODE>
+    <DATA>
+      <TXID>7</TXID>
+      <LENGTH>0</LENGTH>
+      <INODEID>16391</INODEID>
+      <PATH>/tmp/hadoop-yarn/staging/history/done_intermediate</PATH>
+      <TIMESTAMP>1569635546437</TIMESTAMP>
+      <PERMISSION_STATUS>
+        <USERNAME>admin</USERNAME>
+        <GROUPNAME>supergroup</GROUPNAME>
+        <MODE>493</MODE>
+      </PERMISSION_STATUS>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_SET_PERMISSIONS</OPCODE>
+    <DATA>
+      <TXID>8</TXID>
+      <SRC>/tmp/hadoop-yarn/staging/history/done_intermediate</SRC>
+      <MODE>1023</MODE>
+    </DATA>
+  </RECORD>
+  <RECORD>
+    <OPCODE>OP_END_LOG_SEGMENT</OPCODE>
+    <DATA>
+      <TXID>9</TXID>
+    </DATA>
+  </RECORD>
+</EDITS>
+----------------------------------------------
+```
+
+nn元数据丢失从sn恢复
+``` 
+方案 1：直接拷贝 sn namesecondary 目录 到 nn 作为 name目录
+$ pwd
+----------------------------------------------
+/opt/softwares/hadoop-2.7.2
+----------------------------------------------
+
+$ xcall jps 
+----------------------------------------------
+>>> ssh admin@hadoop01 "cd /opt/softwares/hadoop-2.7.2; jps"
+17841 NameNode
+18085 Jps
+16749 DataNode
+16990 NodeManager
+
+>>> ssh admin@hadoop02 "cd /opt/softwares/hadoop-2.7.2; jps"
+11298 DataNode
+11495 NodeManager
+11577 JobHistoryServer
+12027 Jps
+11404 SecondaryNameNode
+
+>>> ssh admin@hadoop03 "cd /opt/softwares/hadoop-2.7.2; jps"
+12506 ResourceManager
+12622 NodeManager
+12367 DataNode
+13135 Jps
+----------------------------------------------
+
+$ hdfs dfs -put ../../downloads/hadoop-2.7.2.tar.gz /apps/test
+
+$ kill 17841
+rm -rf data/tmp/dfs/name
+
+$ scp -r admin@hadoop02:/opt/softwares/hadoop-2.7.2/data/tmp/dfs/namesecondary data/tmp/dfs/
+----------------------------------------------
+in_use.lock                                                                                                                                                                                                 100%   14     0.0KB/s   00:00    
+fsimage_0000000000000000000.md5                                                                                                                                                                             100%   62     0.1KB/s   00:00    
+fsimage_0000000000000000000                                                                                                                                                                                 100%  352     0.3KB/s   00:00    
+edits_0000000000000000001-0000000000000000020                                                                                                                                                               100% 1586     1.6KB/s   00:00    
+fsimage_0000000000000000020.md5                                                                                                                                                                             100%   62     0.1KB/s   00:00    
+fsimage_0000000000000000020                                                                                                                                                                                 100%  985     1.0KB/s   00:00    
+VERSION
+----------------------------------------------  
+
+$ ./sbin/hadoop-daemon.sh start namenode
+----------------------------------------------  
+starting namenode, logging to /opt/softwares/hadoop-2.7.2/logs/hadoop-admin-namenode-hadoop01.out
+----------------------------------------------  
+
+$ hdfs dfs -ls /apps/test
+----------------------------------------------  
+Found 1 items
+-rw-r--r--   3 admin supergroup  212046774 2019-09-28 13:00 /apps/test/hadoop-2.7.2.tar.gz
+----------------------------------------------  
+
+方案 2：拷贝 sn 目录使用命令导入
+$ jps
+---------------------------------------------- 
+17841 NameNode
+18456 Jps
+16749 DataNode
+16990 NodeManager
+---------------------------------------------- 
+
+$ kill 17841
+
+$ rm -rf data/tmp/dfs/name
+
+$ scp -r admin@hadoop02:/opt/softwares/hadoop-2.7.2/data/tmp/dfs/namesecondary data/tmp/dfs/
+---------------------------------------------- 
+in_use.lock                                                                                                                                                                                                 100%   14     0.0KB/s   00:00    
+fsimage_0000000000000000000.md5                                                                                                                                                                             100%   62     0.1KB/s   00:00    
+fsimage_0000000000000000000                                                                                                                                                                                 100%  352     0.3KB/s   00:00    
+edits_0000000000000000001-0000000000000000020                                                                                                                                                               100% 1586     1.6KB/s   00:00    
+fsimage_0000000000000000020.md5                                                                                                                                                                             100%   62     0.1KB/s   00:00    
+fsimage_0000000000000000020                                                                                                                                                                                 100%  985     1.0KB/s   00:00    
+VERSION    
+---------------------------------------------- 
+
+$ ls -l data/tmp/dfs/
+---------------------------------------------- 
+data/tmp/dfs/:
+总用量 0
+drwx------ 3 admin admin 40 9月  28 12:59 data
+drwxrwxr-x 3 admin admin 40 9月  28 13:48 name
+drwxrwxr-x 3 admin admin 40 9月  28 13:48 namesecondary
+[admin@hadoop01 hadoop-2.7.2]$ 
+---------------------------------------------- 
+
+$ ls -l data/tmp/dfs/namesecondary/
+---------------------------------------------- 
+总用量 4
+drwxrwxr-x 2 admin admin 222 9月  28 13:48 current
+-rw-rw-r-- 1 admin admin  14 9月  28 13:48 in_use.lock
+---------------------------------------------- 
+
+删除锁
+$ rm -rf data/tmp/dfs/namesecondary/in_use.lock
+
+修改 checkpoint 间隔，声明 importCheckpoint 操作导入到的目录(注，无需分发)
+$ vim etc/hadoop/hdfs-site.xml  
+---------------------------------------------- 
+<!-- 调整chkp最长时间周期为2min -->
+<property>
+    <name>dfs.namenode.checkpoint.period</name>
+    <value>120</value>
+</property>
+<!-- 指明执行hdfs namenode -importCheckpoint 将Sn数据导入的路径 -->
+<property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/opt/softwares/hadoop-2.7.2/data/tmp/dfs/name</value>
+</property>
+---------------------------------------------- 
+
+$ hdfs namenode -importCheckpoint (导入元数据过程时间非常长，但其间 hdfs 仍然是可以访问的)
+---------------------------------------------- 
+.......
+19/09/28 13:48:34 INFO common.Storage: Lock on /opt/softwares/hadoop-2.7.2/data/tmp/dfs/name/in_use.lock acquired by nodename 18726@hadoop01  上锁
+19/09/28 13:48:34 INFO namenode.FSImage: Storage directory /opt/softwares/hadoop-2.7.2/data/tmp/dfs/name is not formatted. 
+19/09/28 13:48:34 INFO namenode.FSImage: Formatting ...  重新格式化
+19/09/28 13:48:34 INFO common.Storage: Lock on /opt/softwares/hadoop-2.7.2/data/tmp/dfs/namesecondary/in_use.lock acquired by nodename 18726@hadoop01
+19/09/28 13:48:34 WARN namenode.FSNamesystem: !!! WARNING !!!
+......
+19/09/28 13:49:05 INFO hdfs.StateChange: STATE* Safe mode is OFF 退出安全模式
+19/09/28 13:49:05 INFO hdfs.StateChange: STATE* Network topology has 3 racks and 3 datanodes 
+19/09/28 13:49:05 INFO hdfs.StateChange: STATE* UnderReplicatedBlocks has 0 blocks 
+......
+19/09/28 14:01:10 INFO namenode.TransferFsImage: Downloaded file fsimage.ckpt_0000000000000000022 size 985 bytes.
+19/09/28 14:01:10 INFO namenode.NNStorageRetentionManager: Going to retain 2 images with txid >= 20
+19/09/28 14:16:03 INFO BlockStateChange: BLOCK* processReport: from storage DS-b610d59a-b1e1-4f8b-9b22-c10403384e39 node DatanodeRegistration(192.168.152.104:50010, datanodeUuid=fde108a2-406f-4a75-a311-319376031f23, infoPort=50075, infoSecurePort=0, ipcPort=50020, storageInfo=lv=-56;cid=CID-e838bbe2-bd2c-4f2e-a871-8e4253b20bbd;nsid=417039089;c=0), blocks: 2, hasStaleStorage: false, processing time: 3 msecs
+
+.....
+^C 按 Ctrl + C 退出
+19/09/28 14:39:47 ERROR namenode.NameNode: RECEIVED SIGNAL 2: SIGINT 
+19/09/28 14:39:47 INFO namenode.NameNode: SHUTDOWN_MSG: 
+/************************************************************
+SHUTDOWN_MSG: Shutting down NameNode at hadoop01/192.168.152.102
+************************************************************/
+---------------------------------------------- 
+
+$ ll data/tmp/dfs/name/current/
+---------------------------------------------- 
+总用量 1052
+-rw-rw-r-- 1 admin admin      42 9月  28 14:01 edits_0000000000000000021-0000000000000000022
+-rw-rw-r-- 1 admin admin 1048576 9月  28 14:01 edits_inprogress_0000000000000000023
+-rw-rw-r-- 1 admin admin     985 9月  28 13:48 fsimage_0000000000000000020
+-rw-rw-r-- 1 admin admin      62 9月  28 13:48 fsimage_0000000000000000020.md5
+-rw-rw-r-- 1 admin admin     985 9月  28 14:01 fsimage_0000000000000000022
+-rw-rw-r-- 1 admin admin      62 9月  28 14:01 fsimage_0000000000000000022.md5
+-rw-rw-r-- 1 admin admin       3 9月  28 14:01 seen_txid
+-rw-rw-r-- 1 admin admin     207 9月  28 13:48 VERSION
+---------------------------------------------- 
+
+$ vim etc/hadoop/hdfs-site.xml  （删除上面的注释）
+
+重启 namenode
+$ ./sbin/hadoop-daemon.sh start namenode
+
+
+$ hadoop fs -ls /apps/test
+---------------------------------------------- 
+Found 1 items
+-rw-r--r--   3 admin supergroup  212046774 2019-09-28 13:00 /apps/test/hadoop-2.7.2.tar.gz
+---------------------------------------------- 
+```
+
+安全模式
+``` 
+含义：集群只允许读，不允许写操作的模式。
+1.hdfs 集群刚启动，加载 镜像文件和编辑日志到 到 namenode 内存过程，只允许对元数据的读操作，不允许变更的过程，为安全模式，刚执行 格式化的集群，由于尚未存储任何文件，因此启动时跳过安全模式，直接开机；
+2.hdfs 启动过程，dn 节点会统计存储文件块的信息(名称，权限，校验和)等然后汇报给 nn, nn通过比对各 dn节点上传文件块信息，判断文件块健康状态，当所有文件块最小副本数满足率达到 99.9% 以上时，就退出安全模式，一般持续 30s左右。
+(默认块文件最小副本数 3，最大副本数 512)
+
+相关命令
+查看当前安全模式状态
+$ hdfs dfsadmin -safemode get 
+
+手动进入安全模式
+$ hdfs dfsadmin -safemode enter
+
+手动退出安全模式
+$ hdfs dfsadmin -safemode leave 
+
+判断集群是否处于安全模式，如果是则阻塞在此，直至退出安全模式再继续向下，否则直接向下执行 （避免直接向下执行 出异常）
+$ hdfs dfsadmin -safemode wait
+
+演示：
+查看集群安全模式状态
+$ hdfs dfsadmin -safemode get
+---------------------------------------------- 
+Safe mode is OFF
+----------------------------------------------
+
+hadoop01节点手动进入安全模式
+$ hdfs dfsadmin -safemode enter
+----------------------------------------------
+Safe mode is ON
+----------------------------------------------
+
+hadoop02节点通过脚本在 hdfs 上创建目录，创建前检查是否处于安全模式
+$ vim wait.sh
+----------------------------------------------
+#!/bin/bash
+
+hdfs dfsadmin -safemode get
+hdfs dfsadmin -safemode wait
+hdfs dfs -mkdir -p /apps/mr/grep/in
+----------------------------------------------
+
+$ chmod 755 wait.sh
+
+$ bash wait.sh
+----------------------------------------------
+Safe mode is ON
+阻塞在此
+----------------------------------------------
+
+hadoop01 手动退出
+$ hdfs dfsadmin -safemode leave
+----------------------------------------------
+Safe mode is OFF
+----------------------------------------------
+
+hadoop02 监控到安全模式退出，继续向下执行
+----------------------------------------------
+Safe mode is ON
+Safe mode is OFF
+----------------------------------------------
+
+$ hdfs dfsadmin ls /apps/mr
+----------------------------------------------
+Found 1 items
+drwxr-xr-x   - admin supergroup          0 2019-09-28 15:07 /apps/mr/grep
+----------------------------------------------
+```
+![hdfs安全模式](image/安全模式.png)
+
+namenode 多目录元数据备份
+``` 
+多目录配置（注 ${hadoop.tmp.dir} 引用的时 core-site.xml "hadoop.tmp.dir" 存储数据目录配置）
+$ vim etc/hadoop/hdfs-site.xml  
+----------------------------------------------
+<!--hdfs namenode 多目录配置-->
+<property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file://${hadoop.tmp.dir}/dfs/name1,file://${hadoop.tmp.dir}/dfs/name2</value>
+</property>
+----------------------------------------------
+
+分发配置
+$ xsync etc/hadoop/hdfs-site.xml  
+
+$ xcall rm -rf data/tmp/* logs/*
+$ hdfs namenode -format
+----------------------------------------------
+......
+19/09/28 15:24:26 INFO common.Storage: Storage directory /opt/softwares/hadoop-2.7.2/data/tmp/dfs/name1 has been successfully formatted.
+19/09/28 15:24:26 INFO common.Storage: Storage directory /opt/softwares/hadoop-2.7.2/data/tmp/dfs/name2 has been successfully formatted.
+......
+----------------------------------------------
+
+启动集群
+$ startAll.sh
+
+name1, name2 完全一致
+$ ls -l data/tmp/dfs/name1/current/
+----------------------------------------------
+总用量 1052
+-rw-rw-r-- 1 admin admin     678 9月  28 15:25 edits_0000000000000000001-0000000000000000009
+-rw-rw-r-- 1 admin admin 1048576 9月  28 15:26 edits_inprogress_0000000000000000010
+-rw-rw-r-- 1 admin admin     352 9月  28 15:24 fsimage_0000000000000000000
+-rw-rw-r-- 1 admin admin      62 9月  28 15:24 fsimage_0000000000000000000.md5
+-rw-rw-r-- 1 admin admin     762 9月  28 15:25 fsimage_0000000000000000009
+-rw-rw-r-- 1 admin admin      62 9月  28 15:25 fsimage_0000000000000000009.md5
+-rw-rw-r-- 1 admin admin       3 9月  28 15:25 seen_txid
+-rw-rw-r-- 1 admin admin     208 9月  28 15:24 VERSION
+----------------------------------------------
+
+$ ls -l data/tmp/dfs/name2/current/
+----------------------------------------------
+总用量 1052
+-rw-rw-r-- 1 admin admin     678 9月  28 15:25 edits_0000000000000000001-0000000000000000009
+-rw-rw-r-- 1 admin admin 1048576 9月  28 15:26 edits_inprogress_0000000000000000010
+-rw-rw-r-- 1 admin admin     352 9月  28 15:24 fsimage_0000000000000000000
+-rw-rw-r-- 1 admin admin      62 9月  28 15:24 fsimage_0000000000000000000.md5
+-rw-rw-r-- 1 admin admin     762 9月  28 15:25 fsimage_0000000000000000009
+-rw-rw-r-- 1 admin admin      62 9月  28 15:25 fsimage_0000000000000000009.md5
+-rw-rw-r-- 1 admin admin       3 9月  28 15:25 seen_txid
+-rw-rw-r-- 1 admin admin     208 9月  28 15:24 VERSION
+----------------------------------------------
+
+$ hdfs dfs -mkdir -p /apps/test
+
+删除其中之一
+$ rm -rf data/tmp/dfs/name1
+
+集群仍正常运行
+$ xcall jps
+----------------------------------------------
+>>> ssh admin@hadoop01 "cd /opt/softwares/hadoop-2.7.2; jps"
+22128 NameNode
+22264 DataNode
+22748 Jps
+22511 NodeManager
+
+>>> ssh admin@hadoop02 "cd /opt/softwares/hadoop-2.7.2; jps"
+15665 Jps
+15413 JobHistoryServer
+15256 SecondaryNameNode
+15337 NodeManager
+15148 DataNode
+
+>>> ssh admin@hadoop03 "cd /opt/softwares/hadoop-2.7.2; jps"
+15920 ResourceManager
+15781 DataNode
+16037 NodeManager
+16425 Jps
+----------------------------------------------
+
+仍然可读
+$ hdfs dfs -ls /
+----------------------------------------------
+Found 2 items
+drwxr-xr-x   - admin supergroup          0 2019-09-28 15:26 /apps
+drwxrwx---   - admin supergroup          0 2019-09-28 15:25 /tmp
+----------------------------------------------
+
+任然可写
+$ hdfs dfs -ls /apps/test
+----------------------------------------------
+Found 1 items
+-rw-r--r--   3 admin supergroup  212046774 2019-09-28 15:35 /apps/test/hadoop-2.7.2.tar.gz
+----------------------------------------------
+
+说明 name1 name2 是相互备份关系
+
+```
+
+datanode 工作机制
+``` 
+namenode datanode 之间交互
+1.namenode 初始化过程，创建了编辑日志和镜像文件，启动过程现先加载镜像文件，然后执行编辑日志回放文件块元数据，此过程客户端可读，不可写，称为安全模式阶段，运行其间，所有元数据变更操作，先记录编辑日志，然后执行操作，
+secondarynamenoe 定期拷贝 namenode 上最小编辑日志合并到本地镜像文件，然后推送给 namenode,完成元数据定期checkpoint 备份；
+2.hdfs 启动阶段 namenode 回放元数据同时，datanode 统计本节点上处处文件块的元数据(名称，时间戳，校验和)，并与本地存储的块元数据比对，然后向 nanemode 注册，并汇报块信息，健康状态，此后定期以1h 间隔向 namenode 上报块信息，
+namenode 定期(3s)向 datanode 发生指令，感知 datanode 心跳，某次无法感知 dn 心跳时，不会马上将 dn 判定为失效，而是以 5min 间隔连续监测两次 以及期间 10 次心跳监测 5*2min + 10*3s = 10m30s ，然后才判定失效；
+3.dn节点发现文件块校验和与之前记录不一致时，会判定此文件块失效，然后汇报 nn，接收 nn指令从其余 dn节点重新拉去此文件块，恢复文件副本数。
+4.hdfs 提供了 dn节点动态伸缩，水平扩展能力，从而保证文件系统实时高可用。
+
+datanode 掉线，namenode 监测时间间隔
+vim etc/hadoop/core-site.xml
+----------------------------------------------
+<!--获取心跳失败,重新检测机制 默认 5 分钟-->
+<property>
+    <name>dfs.namenode.heartbeat.recheck-interval</name>
+    <value>300000</value>
+</property>
+
+<!-- 正常心跳检测频率 默认 3 秒 -->
+<property>
+    <name>dfs.heartbeat.interval</name>
+    <value>3</value>
+</property>
+----------------------------------------------
+```
+
+datanode 数据完整性保证
+``` 
+1.datanode 读取文件块前先实时计算 checksum
+2.一旦实时计算值与 datanode 上块元数据文件 xxx.meta 中记录的不一致时，表明此文件块已经损坏，此时 datanode 向 namenode 汇报，由 namenode 指示从其余 datanode 节点重新拉去此文件块进行替换；
+3.客户端读取文件块失败，会自动路由到其余datanode节点重新获取；
+4.datanode 节点回定期检测当前节点文件块 checksum信息
+
+手动 checksum
+$ hdfs dfs -checksum /apps/test//hadoop-2.7.2.tar.gz
+----------------------------------------------
+/apps/test/hadoop-2.7.2.tar.gz	MD5-of-262144MD5-of-512CRC32C	00000200000000000004000019d107f81c0ac21af4f09ef1f6783368
+----------------------------------------------
+```
+
+datanode 服役新节点
+``` 
+集群规划
+    192.168.152.102 hadoop01 namenode datanode nodemanager  旧节点
+    192.168.152.103 hadoop02 secondarynamenoe datanode nodemanager historyserver 旧节点
+    192.168.152.104 hadoop03 yarnmanager datanode nodemanager 旧节点
+    192.168.152.105 hadoop04 datanode nodemanager  新加入节点
+    192.168.152.106 hadoop05 datanode nodemanager  新加入节点
+
+datanode 新节点环境准备
+    克隆hadoop01
+    修改 hosts
+    修改 hostname
+    修改网络
+    配置 ssh 通信
+
+namenode节点创建记录 datanode 列表清单 （无需分发）
+vim etc/hadoop/dfs.hosts
+----------------------------------------------
+hadoop01
+hadoop02
+hadoop03
+hadoop04
+hadoop05
+----------------------------------------------
+
+namenode节点修改 hdfs-site.xml 映入 dfs.hosts 文件 （无需分发）
+----------------------------------------------
+<!--增减 datanode时，在此文件列举 dn-->
+<property>
+    <name>dfs.hosts</name>
+    <value>/opt/softwares/hadoop-2.7.2/etc/hadoop/dfs.hosts</value>
+</property>
+----------------------------------------------
+
+namenode 节点刷新集群
+$ hdfs dfsadmin -refreshNodes
+
+$ yarn rmadmin -refreshNodes
+
+$ hdfs dfsadmin -report （集群已经感知到 hadoop04 hadoop05 节点，但节点尚未启动)
+----------------------------------------------
+....
+
+Live datanodes (3):  存活的
+
+Name: 192.168.152.103:50010 (hadoop02)
+Hostname: hadoop02
+.......
+
+
+Name: 192.168.152.104:50010 (hadoop03)
+Hostname: hadoop03
+.......
+
+
+Name: 192.168.152.102:50010 (hadoop01)
+Hostname: hadoop01
+.......
+
+
+Dead datanodes (2): 死亡的
+
+Name: 192.168.152.105:50010 (hadoop04)
+Hostname: hadoop04
+.......
+
+Name: 192.168.152.106:50010 (hadoop05)
+Hostname: hadoop05
+.......
+----------------------------------------------
+
+拷贝 hadoop03 节点到 hadoop04 hadoop05
+$ scp -r /opt/softwares/hadoop-2.7.2 admin@hadoop04:/opt/softwares/
+$ scp -r /opt/softwares/hadoop-2.7.2 admin@hadoop05:/opt/softwares/
+
+hadoop04 hadoop05 删除元数据目录，和审计日志目录
+$ cd /opt/softwares/hadoop-2.7.2
+$ rm -rf  data/tmp/* logs/*
+
+hadoop04 hadoop05 上启动各自的 datanode nodemanager
+$ ./sbin/hadoop-daemon.sh start datanode
+$ ./sbin/yarn-daemon.sh start nodemanager
+
+$ jps
+----------------------------------------------
+7442 NodeManager
+7333 DataNode
+7736 Jps
+----------------------------------------------
+
+$ hdfs dfsadmin -report （集群已经成功接收 hadoop04 hadoop05)
+----------------------------------------------
+......
+
+Live datanodes (5):
+
+Name: 192.168.152.103:50010 (hadoop02)
+Hostname: hadoop02
+......
+
+
+Name: 192.168.152.106:50010 (hadoop05)
+Hostname: hadoop05
+......
+
+
+Name: 192.168.152.105:50010 (hadoop04)
+Hostname: hadoop04
+......
+
+
+Name: 192.168.152.104:50010 (hadoop03)
+Hostname: hadoop03
+......
+
+
+Name: 192.168.152.102:50010 (hadoop01)
+Hostname: hadoop01
+......
+----------------------------------------------
+
+固定集群
+$ vim etc/hadoop/slaves  (添加 hadoop04 hadoop05)
+----------------------------------------------
+hadoop01
+hadoop02
+hadoop03
+hadoop04
+hadoop05
+----------------------------------------------
+
+分发
+$ xsync etc/hadoop/slaves
+
+移除 hdfs-site.xml 中 dfs.hosts 配置
+$ vim etc/hadoop/hdfs-site.xml
+$ rm -rf etc/hadoop/dfs.hosts
+
+刷新集群
+$ hdfs dfsadmin -refreshNodes
+$ yarn rmadmin -refreshNodes
+
+重启校验 能否顺利启动扩展后集群
+```
+
+退役节点
+``` 
+注：演示过程中，顺便测试块文件最小副本数约束。
+
+集群规划
+    192.168.152.102 hadoop01 namenode datanode nodemanager  旧节点
+    192.168.152.103 hadoop02 secondarynamenoe datanode nodemanager historyserver 旧节点
+    192.168.152.104 hadoop03 yarnmanager datanode nodemanager 旧节点
+    192.168.152.105 hadoop04 datanode nodemanager  将退役节点
+    192.168.152.106 hadoop05 datanode nodemanager  将退役节点
+
+$ xcall jps
+----------------------------------------------
+>>> ssh admin@hadoop01 "cd /opt/softwares/hadoop-2.7.2; jps"
+30298 NodeManager
+30844 Jps
+30045 DataNode
+29902 NameNode
+
+>>> ssh admin@hadoop02 "cd /opt/softwares/hadoop-2.7.2; jps"
+20179 SecondaryNameNode
+20260 NodeManager
+20071 DataNode
+20680 Jps
+20335 JobHistoryServer
+
+>>> ssh admin@hadoop03 "cd /opt/softwares/hadoop-2.7.2; jps"
+21792 Jps
+21217 ResourceManager
+21086 DataNode
+21342 NodeManager
+
+>>> ssh admin@hadoop04 "cd /opt/softwares/hadoop-2.7.2; jps"
+8470 DataNode
+8891 Jps
+8589 NodeManager
+
+>>> ssh admin@hadoop05 "cd /opt/softwares/hadoop-2.7.2; jps"
+8854 Jps
+8572 NodeManager
+8462 DataNode
+----------------------------------------------
+
+修改集群最小副本数 （从默认的 3 修改为 4）
+$ vim etc/hadoop/hdfs-site.xml
+----------------------------------------------
+  <!--  文件系统存储数据块的副本数,从此处体现出为伪布式特点 --> 
+  <property>
+         <name>dfs.replication</name>
+         <value>4</value>
+  </property>
+----------------------------------------------
+
+分发
+$ xsync etc/hadoop/hdfs-site.xml
+
+刷新集群
+$ hdfs dfsadmin -refreshNodes
+$ yarn rmadmin -refreshNodes
+
+编写即将退役节点清单
+$ vim etc/hadoop/dfs.hadoop.exclude
+----------------------------------------------
+hadoop04
+hadoop05
+----------------------------------------------
+
+将退役清单引入 hdfs-site.xml 配置 （只需在 namenode 节点配置，无需分发）
+$ vim etc/hadoop/hdfs-site.xml
+----------------------------------------------
+<!-- 即将退役节点清单-->
+<property>
+ <name>dfs.hosts.exclude</name>
+ <value>/opt/softwares/hadoop-2.7.2/etc/hadoop/dfs.hosts.exclude</value>
+</property>
+----------------------------------------------
+
+刷新集群（尽管集群刷新成功，但 hdfs web页面显示 hadoop04 hadoop05 节点始终处于 process in Decommissing 状态）
+$ hdfs dfsadmin -refreshNodes
+$ yarn rmadmin -refreshNodes
+
+手动修改副本数 （hdfs web页面显示 hadoop04 hadoop05 节点退役成功）
+$ hdfs dfs -setrep 3 /apps/test/*
+
+hadoop04 hadoop05 节点停止服务
+$ ./sbin/yarn-daemon.sh stop nodemanager
+$ ./sbin/hadoop-daemon.sh stop datanode
+
+$ vim etc/hadoop/hdfs-site.xml (注释 dfs.hosts.exclude 释放 dfs.hosts, 并将 dfs.hosts 文件删除 hadoop04 hadoop04 无需分发)
+----------------------------------------------
+<!--增减 datanode时，在此文件列举 dn-->
+<property>
+    <name>dfs.hosts</name>
+    <value>/opt/softwares/hadoop-2.7.2/etc/hadoop/dfs.hosts</value>
+</property>
+
+<!-- 即将退役节点清单-->
+<!--
+<property>
+ <name>dfs.hosts.exclude</name>
+ <value>/opt/softwares/hadoop-2.7.2/etc/hadoop/dfs.hosts.exclude</value>
+</property>
+-->
+----------------------------------------------
+
+$  vim etc/hadoop/slaves  (删除 hdoop04 hadoop05)
+----------------------------------------------
+hadoop01
+hadoop02
+hadop03
+----------------------------------------------
+$ xsync etc/hadoop/slaves （分发）
+
+再次刷新集群（此时 hdfs web 页面 hadoop04 hadpoop05 节点彻底消失）
+$ hdfs dfsadmin -refreshNodes
+$ yarn rmadmin -refreshNodes
+```
+
+datanode 多目录配置
+``` 
+注：与 namenode 多目录配置相互备份不同，datanode 多目录配置不回进行相互备份，只不过将数据块存储在不同节点，各目录存储内容不同，后期配置 HA 时，可能属于不同 namenode 管理
+$ vim 
+
+<!-- datanode 存储文件多目录配置-->
+<property>
+    <name>dfs.datanode.data.dir</name>
+    <value>file://${hadoop.tmp.dir}/dfs/data1,file://${hadoop.tmp.dir}/dfs/data2</value>
+</property>
+
+分发
+$ xsync etc/hadoop/hdfs-site.xml
+
+停止旧集群
+$ stopAll.sh
+
+删除旧集群文件
+$ xcall rm -rf data/tmp* logs/*
+
+格式化
+$ hdfs namenode -format 
+
+$ ls -l data/tmp/dfs
+----------------------------------------------
+总用量 0
+drwx------ 3 admin admin 40 9月  28 23:10 data1
+drwx------ 3 admin admin 40 9月  28 23:10 data2
+drwxrwxr-x 3 admin admin 40 9月  28 23:10 name1
+drwxrwxr-x 3 admin admin 40 9月  28 23:10 name2
+----------------------------------------------
+
+$ hdfs dfs -mkdir -p /apps/test
+$ hdfs dfs -put ../../downloads/hadoop-2.7.2.tar.gz /apps/test
+
+$ ll data/tmp/dfs/data1/current/BP-1696619814-192.168.152.102-1569683359405/current/finalized/subdir0/subdir0/
+----------------------------------------------
+总用量 132100
+-rw-rw-r-- 1 admin admin 134217728 9月  28 23:11 blk_1073741825
+-rw-rw-r-- 1 admin admin   1048583 9月  28 23:11 blk_1073741825_1001.meta
+----------------------------------------------
+
+$ ll data/tmp/dfs/data2/current/BP-1696619814-192.168.152.102-1569683359405/current/finalized/subdir0/subdir0/
+----------------------------------------------
+总用量 76604
+-rw-rw-r-- 1 admin admin 77829046 9月  28 23:11 blk_1073741826
+-rw-rw-r-- 1 admin admin   608047 9月  28 23:11 blk_1073741826_1002.meta
+----------------------------------------------
+
+通过上述目录对比发生 datanode 多目录配置不是相互备份关系，存储的还是单目录的数据量
+
 
 ```
