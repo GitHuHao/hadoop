@@ -1233,6 +1233,362 @@ $ ll data/tmp/dfs/data2/current/BP-1696619814-192.168.152.102-1569683359405/curr
 ----------------------------------------------
 
 通过上述目录对比发生 datanode 多目录配置不是相互备份关系，存储的还是单目录的数据量
+```
 
+节点间数据拷贝
+``` 
+推模式: 从本地(hadoop01) 推送到 hadoop02
+scp -r 1.txt admin@hadoop02:/opt/downloads 
+
+拉模式：从 hadoop02 拉去到本地(hadoop01)
+scp -r admin@hadoop02:/opt/downloads/1.txt .
+
+中继模式：借助本地(hadoop02)为中继，从hadoop02 推送到 hadoop03
+scp -r admin@hadoop02:opt/downloads/1.txt admin@hadoop03:/opt/downloads
+```
+
+hdfs 文件系统内部数据拷贝
+```  
+hdfs dfs -cp source1 ... dest
+hdfs dfs -mv source1 ... dest
+```
+
+hdfs 文件系统与 Linux 文件系统间数据拷贝
+``` 
+hdfs dfs -get source dest
+hdfs dfs -put source dest
+```
+
+hdfs 集群间拷贝 (执行了 MR)
+``` 
+集群规划
+    集群 1
+    192.168.152.102 hadoop01  
+    192.168.152.103 hadoop02 
+    192.168.152.104 hadoop03 
+    
+    伪分布式2
+    192.168.152.105 hadoop04 
+
+$ hadoop distcp hdfs://hadoop01:9000/apps/mr/grep/in/* hdfs://hadoop04:9000/apps/test/
+----------------------------------------------
+19/09/29 08:14:59 INFO tools.DistCp: Input Options: DistCpOptions{atomicCommit=false, syncFolder=false, deleteMissing=false, ignoreFailures=false, maxMaps=20, sslConfigurationFile='null', copyStrategy='uniformsize', sourceFileListing=null, sourcePaths=[hdfs://hadoop01:9000/apps/mr/grep/in/*], targetPath=hdfs://hadoop04:9000/apps/test, targetPathExists=true, preserveRawXattrs=false}
+19/09/29 08:14:59 INFO client.RMProxy: Connecting to ResourceManager at hadoop03/192.168.152.104:8032
+19/09/29 08:14:59 INFO Configuration.deprecation: io.sort.mb is deprecated. Instead, use mapreduce.task.io.sort.mb
+19/09/29 08:14:59 INFO Configuration.deprecation: io.sort.factor is deprecated. Instead, use mapreduce.task.io.sort.factor
+19/09/29 08:15:00 INFO client.RMProxy: Connecting to ResourceManager at hadoop03/192.168.152.104:8032
+19/09/29 08:15:00 INFO mapreduce.JobSubmitter: number of splits:1
+19/09/29 08:15:00 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1569715195468_0003
+19/09/29 08:15:01 INFO impl.YarnClientImpl: Submitted application application_1569715195468_0003
+19/09/29 08:15:01 INFO mapreduce.Job: The url to track the job: http://hadoop03:8088/proxy/application_1569715195468_0003/
+19/09/29 08:15:01 INFO tools.DistCp: DistCp job-id: job_1569715195468_0003
+19/09/29 08:15:01 INFO mapreduce.Job: Running job: job_1569715195468_0003
+19/09/29 08:15:08 INFO mapreduce.Job: Job job_1569715195468_0003 running in uber mode : false
+19/09/29 08:15:08 INFO mapreduce.Job:  map 0% reduce 0%
+19/09/29 08:15:13 INFO mapreduce.Job:  map 100% reduce 0%
+19/09/29 08:15:14 INFO mapreduce.Job: Job job_1569715195468_0003 completed successfully
+19/09/29 08:15:14 INFO mapreduce.Job: Counters: 33
+	File System Counters
+		FILE: Number of bytes read=0
+		FILE: Number of bytes written=120228
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=1789
+		HDFS: Number of bytes written=1402
+		HDFS: Number of read operations=19
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=4
+	Job Counters 
+		Launched map tasks=1
+		Other local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=2839
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=2839
+		Total vcore-milliseconds taken by all map tasks=2839
+		Total megabyte-milliseconds taken by all map tasks=2907136
+	Map-Reduce Framework
+		Map input records=1
+		Map output records=0
+		Input split bytes=135
+		Spilled Records=0
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=65
+		CPU time spent (ms)=420
+		Physical memory (bytes) snapshot=97767424
+		Virtual memory (bytes) snapshot=2082267136
+		Total committed heap usage (bytes)=18808832
+	File Input Format Counters 
+		Bytes Read=252
+	File Output Format Counters 
+		Bytes Written=0
+	org.apache.hadoop.tools.mapred.CopyMapper$Counter
+		BYTESCOPIED=1402
+		BYTESEXPECTED=1402
+		COPY=1
+----------------------------------------------
+``` 
+
+文件归档
+``` 
+1.hdfs 主要有 namenode,secondarynamenode,datanode 三种角色组成，其中 namenode 负责存储文件的元数据信息(名称，长度，时间戳，校验和)，本身不存储数据块，
+secondarynamenode 负责周期性对 namenode 存储的元数据镜像文件以及在此基础上产生的编辑日志进行 checkpoint 合并，实现元数据备份效果，datanode 负责存储真正的数据块，
+并周期性接受 namenode指令，对数据块进行检查，备份移动，三者相互协调保证整个文件系统稳定高效运行；
+2.市面流行服务器内存 512G，如果针对每个存储文件都维护一个元数据文件，尽管只有 150Byte开销，但终究存在存储上限，而且过多小文件存在，对存储维护也十分不利，考虑到此，
+可以将namenode 某存储目录下元数据小文件统一以指定格式维护到一个元数据文件中，二而不必对单个存储文件创建元数据文件进行管理的方式就称为文件归档。
+3.经过归档达到存储文件，可以直接查看，提交 MR 运算，并直接解压获取原始文件
+
+归档效果
+    原本文件级别元数据存储开销，放宽到了目录级别元数据开销。
+
+普通目录
+$ hdfs dfs -mkdir -p /apps/test
+
+归档文件目录
+$ hdfs dfs -mkdir -p /apps/har
+
+上传文件到归档目录
+$ hdfs dfs -put etc/hadoop/* /apps/test/
+
+将 /apps/test 归档存储为 /apps/har 目录下的 test.har （执行了 MR）
+$ hadoop archive -archiveName test.har -p /apps/test /apps/har
+
+$ hdfs dfs -ls /apps/har
+----------------------------------------------
+Found 1 items
+drwxr-xr-x   - admin supergroup          0 2019-09-29 08:45 /apps/har/test.har
+----------------------------------------------
+
+$ hdfs dfs -ls -R /apps/har/test.har （hdfs web 页面也能查看）
+----------------------------------------------
+Found 4 items
+-rw-r--r--   4 admin supergroup          0 2019-09-29 08:45 /apps/har/test.har/_SUCCESS
+-rw-r--r--   5 admin supergroup        296 2019-09-29 08:45 /apps/har/test.har/_index  (索引)
+-rw-r--r--   5 admin supergroup         23 2019-09-29 08:45 /apps/har/test.har/_masterindex
+-rw-r--r--   4 admin supergroup       3314 2019-09-29 08:45 /apps/har/test.har/part-0  （数据）
+----------------------------------------------
+
+基于归档协议，查看其中指定文件 core-site.xml
+$ hdfs dfs -cat har:///apps/har/test.har/core-site.xml
+
+基于归档目录下指定文件执行 MR (执行了两个 MR，第一个是解压，第二个是计算)
+$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar grep 'har:///apps/har/test.har/core-site.xml' '/apps/mr/grep/out' 'www[a-z.]+'
+
+$ hdfs dfs -rm -r /apps/test/*
+
+解压归档文件
+$ hdfs dfs -cp 'har:///apps/har/test.har/* /apps/test
+
+$ hdfs dfs -ls /apps/test
+----------------------------------------------
+Found 3 items
+-rw-r--r--   4 admin supergroup       1402 2019-09-29 08:50 /apps/test/core-site.xml
+-rw-r--r--   4 admin supergroup       1883 2019-09-29 08:50 /apps/test/hdfs-site.xml
+-rw-r--r--   4 admin supergroup         29 2019-09-29 08:50 /apps/test/slaves
+----------------------------------------------
 
 ```
+
+文件快照
+``` 
+意义： 以最快效率，最小开销备份数据。
+
+创建快照文件目录，并开启快照功能
+$ hdfs dfs -mkdir -p /apps/shapshot
+
+$ hdfs dfsadmin -allowSnapshot /apps/snapshot
+----------------------------------------------
+Allowing snaphot on /apps/snapshot succeeded
+----------------------------------------------
+
+查看快照目录 (.snapshot 是隐藏目录，直接无法查看，但可感知)
+$ hdfs dfs ls -R /apps/snapshot
+
+$ hdfs dfs -ls /apps/snapshot/.snapshot
+
+列举快照文件目录
+$ hdfs lsSnapshottableDir
+----------------------------------------------
+drwxr-xr-x 0 admin supergroup 0 2019-09-29 22:42 0 65536 /apps/snapshot
+----------------------------------------------
+
+往快照目录存储文件，并创建第一个快照
+$ hdfs dfs -put etc/hadoop/core-site.xml /apps/snapshot
+$ hdfs dfs -createSnapshot /apps/snapshot
+----------------------------------------------
+Created snapshot /apps/snapshot/.snapshot/s20190930-073624.627
+----------------------------------------------
+
+增删改
+$ hdfs dfs -put etc/hadoop/hdfs-site.xml /apps/snapshot/
+$ hdfs dfs -rm -r /apps/snapshot/core-site.xml
+
+创建第二份快照
+$ hdfs dfs -createSnapshot /apps/snapshot/
+----------------------------------------------
+Created snapshot /apps/snapshot/.snapshot/s20190930-074052.958
+----------------------------------------------
+
+快照比对
+                       快照目录  当前状态   之前版本 (.snapshot 可以省略)
+$ hdfs snapshotDiff /apps/snapshot . .snapshot/s20190930-073624.627
+----------------------------------------------
+Difference between current directory and snapshot s20190930-073624.627 under directory /apps/snapshot:
+M	.
+-	./hdfs-site.xml
++	./core-site.xml
+----------------------------------------------
+
+等效于上面操作
+$ hdfs snapshotDiff /apps/snapshot . s20190930-073624.627
+----------------------------------------------
+Difference between current directory and snapshot s20190930-073624.627 under directory /apps/snapshot:
+M	.
+-	./hdfs-site.xml
++	./core-site.xml
+----------------------------------------------
+
+当前状态与最新快照之间无差异
+$ hdfs snapshotDiff /apps/snapshot . s20190930-074052.958
+----------------------------------------------
+Difference between current directory and snapshot s20190930-074052.958 under directory /apps/snapshot:
+
+----------------------------------------------
+
+历史两个快照直接差异（后者相对于前者 + 增加了， - 减少了）
+$ hdfs snapshotDiff /apps/snapshot s20190930-073624.627 s20190930-074052.958
+----------------------------------------------
+Difference between snapshot s20190930-073624.627 and snapshot s20190930-074052.958 under directory /apps/snapshot:
+M	.
++	./hdfs-site.xml
+-	./core-site.xml
+----------------------------------------------
+
+重命名快照，方便记忆
+                            快照目录        快照版本              名称
+$ hdfs dfs -renameSnapshot /apps/snapshot s20190930-074052.958 add_hdfs
+$ hdfs dfs -renameSnapshot /apps/snapshot s20190930-073624.627 add_core
+
+$ hdfs dfs -ls /apps/snapshot/.snapshot/
+----------------------------------------------
+Found 2 items
+drwxr-xr-x   - admin supergroup          0 2019-09-30 07:36 /apps/snapshot/.snapshot/add_core
+drwxr-xr-x   - admin supergroup          0 2019-09-30 07:40 /apps/snapshot/.snapshot/add_hdfs
+----------------------------------------------
+
+删除快照目录指定版本快照
+                            目录              版本
+$ hdfs dfs -deleteSnapshot /apps/snapshot/ add_core
+
+$ hdfs dfs -ls /apps/snapshot/.snapshot
+----------------------------------------------
+Found 1 items
+drwxr-xr-x   - admin supergroup          0 2019-09-30 07:36 /apps/snapshot/.snapshot/add_hdfs
+----------------------------------------------
+
+直接拷贝快照内容，恢复文件
+$ hdfs dfs -mkdir -p /apps/sp
+$ hdfs dfs -cp /apps/snapshot/.snapshot/add_hdfs/* /apps/sp
+$ hdfs dfs -ls /apps/sp
+----------------------------------------------
+Found 1 items
+-rw-r--r--   4 admin supergroup       1402 2019-09-30 08:00 /apps/sp/hdfs-site.xml
+----------------------------------------------
+
+无法直接删除存在快照版本的可快照目录
+$ hdfs dfs -rm -r /apps/snapshot/*
+----------------------------------------------
+19/09/30 08:04:49 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+rm: The directory /apps/snapshot cannot be deleted since /apps/snapshot is snapshottable and already has snapshots
+----------------------------------------------
+
+删除快照版本，就可以顺利删除快照目录下内容(说明快照时记忆文件指针操作，并非真实将文件复制了一份)
+$ hdfs dfs -deleteSnapshot /apps/snapshot add_hdfs
+
+$ hdfs dfs -rm -r /apps/snapshot/*
+----------------------------------------------
+19/09/30 08:05:32 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted /apps/snapshot
+----------------------------------------------
+
+禁止快照
+$ hdfs dfsadmin disallowSnapshot
+``` 
+
+回收站
+``` 
+意义：执行的删除操作，优先移动到 /user/${username}/.Trash/Current 目录下，超过 fs.trash.interval 时间间隔，重命名移动到 /user/${username}/.Trash/xxxxx 带时间戳版本号目录下，
+后期存储空间不够时，按 FIFO 原则覆盖，从而一定程度上提供容错空间。
+
+修改配置
+$ vim etc/hadoop/core-site.xml
+----------------------------------------------
+<!-- 修改访问回收站默认用户-->
+<property> 
+    <name>hadoop.http.staticuser.user</name> 
+    <value>admin</value> 
+</property> 
+
+<!--  回收站文件过期时间（min）, 超过此阈值，文件将被删除，设置为 0 时，垃圾回收机制将关闭--> 
+<property> 
+    <name>fs.trash.interval</name> 
+    <value>2</value> 
+</property> 
+
+<!--  回收站 checkpoint 周期, 需要<= fs.trash.interval, 当为 0 时，  等同于 fs.trash.interval,每次检查器运行，创建新检查点--> 
+<property> 
+    <name>fs.trash.checkpoint.interval</name> 
+    <value>1</value> 
+</property> 
+---------------------------------
+工作机制：
+    1.删除文件先移动到 /user/${username}/.Trash/Current/${path} 目录下;
+    2.按 fs.trash.checkpoint.interval 间隔执行 checkpoint 操作，将/user/${username}/.Trash/Current/${path} 移动到 /user/${username}/.Trash/${tmstp}/${path} 目录，
+    设置为 0 与 fs.trash.interval 一致，单位（min）;
+    3.checkpoint之后文件将保留 fs.trash.interval 时间，然后被删除，设置为 0 ，永久保存在 checkpoint 目录。
+
+正常运行保障：
+    1.权限，修改访问回收站默认用户；
+    2.checkpoint 间隔"fs.trash.checkpoint.interval" <= 过期时间间隔 "fs.trash.interval"；
+    3.需要重启，依靠 -refreshNodes 无法启用。
+
+
+分发
+$ xsync etc/hadoop/core-site.xml
+
+重启集群
+$ stopAll.sh
+$ startAll.sh
+
+执行删除
+$ hdfs dfs -rm -r /apps/test/core-site.xml
+---------------------------------
+19/10/01 16:11:03 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 2 minutes, Emptier interval = 1 minutes.
+Moved: 'hdfs://hadoop01:9000/apps/test/core-site.xml' to trash at: hdfs://hadoop01:9000/user/admin/.Trash/Current
+---------------------------------
+
+立即移动到回收站 /user/admin/.Trash/Current/apps/test/core-site.xml  Emptier
+$ hdfs dfs -ls hdfs://hadoop01:9000/user/admin/.Trash/Current/apps/test/core-site.xml
+---------------------------------
+-rw-r--r--   4 admin supergroup       2009 2019-10-01 16:19 /user/admin/.Trash/Current/apps/test/core-site.xml
+---------------------------------
+
+fs.trash.checkpoint.interval 间隔后，执行 checkpoint，保存为
+$ hdfs dfs -ls /user/admin/.Trash/191001162000/apps/test
+---------------------------------
+Found 1 items
+-rw-r--r--   4 admin supergroup       2009 2019-10-01 16:19 /user/admin/.Trash/191001162000/apps/test/core-site.xml
+---------------------------------
+
+从删除开始 fs.trash.interval 间隔后，从 checkpoint 目录 Deletion
+$ hdfs dfs -ls /user/admin/.Trash/191001162000/apps/test
+---------------------------------
+ls: `/user/admin/.Trash/191001162000/apps/test': No such file or directory
+---------------------------------
+
+跳过回收站删除
+$ hdfs dfs -rm -r --skipTrash xxx
+```
+
+
