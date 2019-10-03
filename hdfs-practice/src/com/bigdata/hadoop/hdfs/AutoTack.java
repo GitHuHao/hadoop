@@ -1,4 +1,4 @@
-package com.bigdata.hadoop;
+package com.bigdata.hadoop.hdfs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
