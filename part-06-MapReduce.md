@@ -60,7 +60,7 @@ MR 作业提交之 MapReduce
 ```
 ![作业提交流程MapReduce.png](image/作业提交流程MapReduce.png)
 
-WordCount实例
+[WordCount实例](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/mr/wordcount/local)
 ``` 
 WCMapper 
 WCReducer
