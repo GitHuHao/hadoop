@@ -1,0 +1,6 @@
+TableBean{orderId='1001', productId='01', productName='小米', count=1}
+TableBean{orderId='1002', productId='02', productName='华为', count=2}
+TableBean{orderId='1003', productId='03', productName='格力', count=3}
+TableBean{orderId='1001', productId='01', productName='小米', count=4}
+TableBean{orderId='1002', productId='02', productName='华为', count=5}
+TableBean{orderId='1003', productId='03', productName='格力', count=6}

@@ -1,0 +1,262 @@
+/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/bin/java "-javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=52667:/Applications/IntelliJ IDEA.app/Contents/bin" -Dfile.encoding=UTF-8 -classpath /Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/deploy.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/cldrdata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/dnsns.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/jaccess.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/jfxrt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/localedata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/nashorn.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/sunec.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/ext/zipfs.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/javaws.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/jfxswt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/management-agent.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/plugin.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/ant-javafx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/javafx-mx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/jconsole.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/packager.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/sa-jdi.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/lib/tools.jar:/Users/huhao/softwares/idea_proj/hadoop/out/production/hdfs-practice:/Users/huhao/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/huhao/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/el-api.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jasper.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/xz-1.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/asm-3.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jsp-api.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/catalina.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/bootstrap.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/ecj-4.3.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/guice-3.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jasper-el.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/avro-1.7.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/gson-2.2.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/junit-4.11.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/catalina-ha.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jsch-0.1.42.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jsp-api-2.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/servlet-api.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-dbcp.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-juli.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/xmlenc-0.52.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/catalina-ant.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/guava-11.0.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hsqldb-2.0.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jets3t-0.9.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jettison-1.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jetty-6.1.26.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jline-0.9.94.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jsr305-3.0.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/log4j-1.2.17.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/paranamer-2.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-coyote.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/activation-1.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-daemon.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-io-2.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/httpcore-4.2.5.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/javax.inject-1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jaxb-api-2.2.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/stax-api-1.0-2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-i18n-es.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-i18n-fr.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/tomcat-i18n-ja.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/annotations-api.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/aopalliance-1.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/catalina-tribes.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-cli-1.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-net-3.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jersey-core-1.9.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jersey-json-1.9.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/joda-time-2.9.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/json-simple-1.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/servlet-api-2.5.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/xml-apis-1.3.04.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/zookeeper-3.4.6.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-lang-2.6.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-ant-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-aws-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-kms-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-nfs-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-sls-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/httpclient-4.2.5.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jersey-guice-1.9.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/slf4j-api-1.7.10.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/xercesImpl-2.9.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-codec-1.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/guice-servlet-3.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-auth-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-hdfs-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hamcrest-core-1.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-xc-1.9.13.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jaxb-impl-2.2.3-1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jersey-client-1.9.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jersey-server-1.9.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jetty-util-6.1.26.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/mockito-all-1.8.5.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/netty-3.6.2.Final.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/api-i18n-1.0.0-M20.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/api-util-1.0.0-M20.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/aws-java-sdk-1.7.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-azure-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-rumen-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-core-2.2.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/leveldbjni-all-1.8.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/metrics-core-3.0.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/azure-storage-2.0.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-lang3-3.3.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-math3-3.1.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-common-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-distcp-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-extras-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/java-xmlbuilder-0.4.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jul-to-slf4j-1.7.10.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/protobuf-java-2.5.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/snappy-java-1.0.4.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-digester-1.8.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/curator-client-2.7.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-gridmix-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-jaxrs-1.9.13.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/slf4j-log4j12-1.7.10.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-daemon-1.0.13.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-logging-1.1.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/curator-recipes-2.7.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-archives-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-datajoin-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-hdfs-nfs-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-api-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/zookeeper-3.4.6-tests.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/api-asn1-api-1.0.0-M20.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-compress-1.4.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-httpclient-3.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-openstack-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-streaming-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-databind-2.2.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/netty-all-4.0.23.Final.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/apacheds-i18n-2.0.0-M15.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-beanutils-1.7.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/curator-framework-2.7.1.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-hdfs-2.7.2-tests.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-core-asl-1.9.13.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-annotations-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-client-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-common-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-collections-3.2.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-configuration-1.6.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-common-2.7.2-tests.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-annotations-2.2.3.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/jackson-mapper-asl-1.9.13.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-registry-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-common-2.7.2-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-distcp-2.7.2-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/commons-beanutils-core-1.8.0.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/htrace-core-3.1.0-incubating.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-archives-2.7.2-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-datajoin-2.7.2-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-examples-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-common-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-common-2.7.2-test-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-distcp-2.7.2-test-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-hs-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-app-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-archives-2.7.2-test-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-datajoin-2.7.2-test-sources.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-core-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-web-proxy-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-common-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-nodemanager-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-tests-2.7.2-tests.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-shuffle-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-jobclient-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-hs-plugins-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-resourcemanager-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-sharedcachemanager-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-mapreduce-client-jobclient-2.7.2-tests.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-applications-distributedshell-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-server-applicationhistoryservice-2.7.2.jar:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/lib/hadoop-yarn-applications-unmanaged-am-launcher-2.7.2.jar com.bigdata.hadoop.split.sequence.LinkedDriver
+2019-10-06 00:03:49,382 WARN [org.apache.hadoop.util.NativeCodeLoader] - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2019-10-06 00:03:49,550 INFO [org.apache.hadoop.conf.Configuration.deprecation] - session.id is deprecated. Instead, use dfs.metrics.session-id
+2019-10-06 00:03:49,551 INFO [org.apache.hadoop.metrics.jvm.JvmMetrics] - Initializing JVM Metrics with processName=JobTracker, sessionId=
+2019-10-06 00:03:49,789 WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2019-10-06 00:03:49,793 WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2019-10-06 00:03:49,826 INFO [org.apache.hadoop.mapreduce.lib.input.FileInputFormat] - Total input paths to process : 3
+2019-10-06 00:03:49,863 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:3
+2019-10-06 00:03:49,938 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - Submitting tokens for job: job_local1613692079_0001
+2019-10-06 00:03:50,046 INFO [org.apache.hadoop.mapreduce.Job] - The url to track the job: http://localhost:8080/
+2019-10-06 00:03:50,046 INFO [org.apache.hadoop.mapreduce.Job] - Running job: job_local1613692079_0001
+2019-10-06 00:03:50,047 INFO [org.apache.hadoop.mapred.LocalJobRunner] - OutputCommitter set in config null
+2019-10-06 00:03:50,051 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:50,053 INFO [org.apache.hadoop.mapred.LocalJobRunner] - OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2019-10-06 00:03:50,097 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Waiting for map tasks
+2019-10-06 00:03:50,097 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local1613692079_0001_m_000000_0
+2019-10-06 00:03:50,113 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:50,117 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:50,117 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:50,119 INFO [org.apache.hadoop.mapred.MapTask] - Processing split: file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/in/data3.txt:0+42
+2019-10-06 00:03:50,176 INFO [org.apache.hadoop.mapred.MapTask] - (EQUATOR) 0 kvi 26214396(104857584)
+2019-10-06 00:03:50,176 INFO [org.apache.hadoop.mapred.MapTask] - mapreduce.task.io.sort.mb: 100
+2019-10-06 00:03:50,176 INFO [org.apache.hadoop.mapred.MapTask] - soft limit at 83886080
+2019-10-06 00:03:50,176 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufvoid = 104857600
+2019-10-06 00:03:50,176 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396; length = 6553600
+2019-10-06 00:03:50,178 INFO [org.apache.hadoop.mapred.MapTask] - Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2019-10-06 00:03:50,188 INFO [org.apache.hadoop.mapred.LocalJobRunner] -
+2019-10-06 00:03:50,189 INFO [org.apache.hadoop.mapred.MapTask] - Starting flush of map output
+2019-10-06 00:03:50,189 INFO [org.apache.hadoop.mapred.MapTask] - Spilling map output
+2019-10-06 00:03:50,189 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufend = 133; bufvoid = 104857600
+2019-10-06 00:03:50,189 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396(104857584); kvend = 26214396(104857584); length = 1/6553600
+2019-10-06 00:03:50,193 INFO [org.apache.hadoop.mapred.MapTask] - Finished spill 0
+2019-10-06 00:03:50,196 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local1613692079_0001_m_000000_0 is done. And is in the process of committing
+2019-10-06 00:03:50,201 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map
+2019-10-06 00:03:50,202 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local1613692079_0001_m_000000_0' done.
+2019-10-06 00:03:50,202 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local1613692079_0001_m_000000_0
+2019-10-06 00:03:50,202 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local1613692079_0001_m_000001_0
+2019-10-06 00:03:50,202 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:50,203 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:50,203 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:50,203 INFO [org.apache.hadoop.mapred.MapTask] - Processing split: file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/in/data2.txt:0+42
+2019-10-06 00:03:50,252 INFO [org.apache.hadoop.mapred.MapTask] - (EQUATOR) 0 kvi 26214396(104857584)
+2019-10-06 00:03:50,252 INFO [org.apache.hadoop.mapred.MapTask] - mapreduce.task.io.sort.mb: 100
+2019-10-06 00:03:50,252 INFO [org.apache.hadoop.mapred.MapTask] - soft limit at 83886080
+2019-10-06 00:03:50,252 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufvoid = 104857600
+2019-10-06 00:03:50,253 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396; length = 6553600
+2019-10-06 00:03:50,253 INFO [org.apache.hadoop.mapred.MapTask] - Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2019-10-06 00:03:50,254 INFO [org.apache.hadoop.mapred.LocalJobRunner] -
+2019-10-06 00:03:50,254 INFO [org.apache.hadoop.mapred.MapTask] - Starting flush of map output
+2019-10-06 00:03:50,254 INFO [org.apache.hadoop.mapred.MapTask] - Spilling map output
+2019-10-06 00:03:50,254 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufend = 133; bufvoid = 104857600
+2019-10-06 00:03:50,255 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396(104857584); kvend = 26214396(104857584); length = 1/6553600
+2019-10-06 00:03:50,256 INFO [org.apache.hadoop.mapred.MapTask] - Finished spill 0
+2019-10-06 00:03:50,257 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local1613692079_0001_m_000001_0 is done. And is in the process of committing
+2019-10-06 00:03:50,259 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map
+2019-10-06 00:03:50,259 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local1613692079_0001_m_000001_0' done.
+2019-10-06 00:03:50,259 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local1613692079_0001_m_000001_0
+2019-10-06 00:03:50,259 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local1613692079_0001_m_000002_0
+2019-10-06 00:03:50,259 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:50,260 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:50,260 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:50,260 INFO [org.apache.hadoop.mapred.MapTask] - Processing split: file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/in/data.txt:0+42
+2019-10-06 00:03:50,322 INFO [org.apache.hadoop.mapred.MapTask] - (EQUATOR) 0 kvi 26214396(104857584)
+2019-10-06 00:03:50,322 INFO [org.apache.hadoop.mapred.MapTask] - mapreduce.task.io.sort.mb: 100
+2019-10-06 00:03:50,322 INFO [org.apache.hadoop.mapred.MapTask] - soft limit at 83886080
+2019-10-06 00:03:50,322 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufvoid = 104857600
+2019-10-06 00:03:50,322 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396; length = 6553600
+2019-10-06 00:03:50,323 INFO [org.apache.hadoop.mapred.MapTask] - Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2019-10-06 00:03:50,325 INFO [org.apache.hadoop.mapred.LocalJobRunner] -
+2019-10-06 00:03:50,325 INFO [org.apache.hadoop.mapred.MapTask] - Starting flush of map output
+2019-10-06 00:03:50,326 INFO [org.apache.hadoop.mapred.MapTask] - Spilling map output
+2019-10-06 00:03:50,328 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufend = 132; bufvoid = 104857600
+2019-10-06 00:03:50,328 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396(104857584); kvend = 26214396(104857584); length = 1/6553600
+2019-10-06 00:03:50,329 INFO [org.apache.hadoop.mapred.MapTask] - Finished spill 0
+2019-10-06 00:03:50,330 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local1613692079_0001_m_000002_0 is done. And is in the process of committing
+2019-10-06 00:03:50,332 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map
+2019-10-06 00:03:50,332 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local1613692079_0001_m_000002_0' done.
+2019-10-06 00:03:50,332 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local1613692079_0001_m_000002_0
+2019-10-06 00:03:50,332 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map task executor complete.
+2019-10-06 00:03:50,334 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Waiting for reduce tasks
+2019-10-06 00:03:50,334 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local1613692079_0001_r_000000_0
+2019-10-06 00:03:50,340 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:50,340 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:50,340 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:50,342 INFO [org.apache.hadoop.mapred.ReduceTask] - Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@591f4855
+2019-10-06 00:03:50,352 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - MergerManager: memoryLimit=2672505600, maxSingleShuffleLimit=668126400, mergeThreshold=1763853824, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2019-10-06 00:03:50,354 INFO [org.apache.hadoop.mapreduce.task.reduce.EventFetcher] - attempt_local1613692079_0001_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2019-10-06 00:03:50,377 INFO [org.apache.hadoop.mapreduce.task.reduce.LocalFetcher] - localfetcher#1 about to shuffle output of map attempt_local1613692079_0001_m_000001_0 decomp: 137 len: 141 to MEMORY
+2019-10-06 00:03:50,389 INFO [org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput] - Read 137 bytes from map-output for attempt_local1613692079_0001_m_000001_0
+2019-10-06 00:03:50,390 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - closeInMemoryFile -> map-output of size: 137, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->137
+2019-10-06 00:03:50,392 INFO [org.apache.hadoop.mapreduce.task.reduce.LocalFetcher] - localfetcher#1 about to shuffle output of map attempt_local1613692079_0001_m_000002_0 decomp: 136 len: 140 to MEMORY
+2019-10-06 00:03:50,392 INFO [org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput] - Read 136 bytes from map-output for attempt_local1613692079_0001_m_000002_0
+2019-10-06 00:03:50,392 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - closeInMemoryFile -> map-output of size: 136, inMemoryMapOutputs.size() -> 2, commitMemory -> 137, usedMemory ->273
+2019-10-06 00:03:50,394 INFO [org.apache.hadoop.mapreduce.task.reduce.LocalFetcher] - localfetcher#1 about to shuffle output of map attempt_local1613692079_0001_m_000000_0 decomp: 137 len: 141 to MEMORY
+2019-10-06 00:03:50,394 INFO [org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput] - Read 137 bytes from map-output for attempt_local1613692079_0001_m_000000_0
+2019-10-06 00:03:50,394 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - closeInMemoryFile -> map-output of size: 137, inMemoryMapOutputs.size() -> 3, commitMemory -> 273, usedMemory ->410
+2019-10-06 00:03:50,395 INFO [org.apache.hadoop.mapreduce.task.reduce.EventFetcher] - EventFetcher is interrupted.. Returning
+2019-10-06 00:03:50,395 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 3 / 3 copied.
+2019-10-06 00:03:50,396 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - finalMerge called with 3 in-memory map-outputs and 0 on-disk map-outputs
+2019-10-06 00:03:50,400 INFO [org.apache.hadoop.mapred.Merger] - Merging 3 sorted segments
+2019-10-06 00:03:50,402 INFO [org.apache.hadoop.mapred.Merger] - Down to the last merge-pass, with 3 segments left of total size: 144 bytes
+2019-10-06 00:03:50,403 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merged 3 segments, 410 bytes to disk to satisfy reduce memory limit
+2019-10-06 00:03:50,403 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merging 1 files, 410 bytes from disk
+2019-10-06 00:03:50,403 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merging 0 segments, 0 bytes from memory into reduce
+2019-10-06 00:03:50,403 INFO [org.apache.hadoop.mapred.Merger] - Merging 1 sorted segments
+2019-10-06 00:03:50,404 INFO [org.apache.hadoop.mapred.Merger] - Down to the last merge-pass, with 1 segments left of total size: 318 bytes
+2019-10-06 00:03:50,404 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 3 / 3 copied.
+2019-10-06 00:03:50,429 INFO [org.apache.hadoop.conf.Configuration.deprecation] - mapred.skip.on is deprecated. Instead, use mapreduce.job.skiprecords
+2019-10-06 00:03:50,433 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local1613692079_0001_r_000000_0 is done. And is in the process of committing
+2019-10-06 00:03:50,434 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 3 / 3 copied.
+2019-10-06 00:03:50,434 INFO [org.apache.hadoop.mapred.Task] - Task attempt_local1613692079_0001_r_000000_0 is allowed to commit now
+2019-10-06 00:03:50,434 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - Saved output of task 'attempt_local1613692079_0001_r_000000_0' to file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/out/_temporary/0/task_local1613692079_0001_r_000000
+2019-10-06 00:03:50,435 INFO [org.apache.hadoop.mapred.LocalJobRunner] - reduce > reduce
+2019-10-06 00:03:50,435 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local1613692079_0001_r_000000_0' done.
+2019-10-06 00:03:50,435 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local1613692079_0001_r_000000_0
+2019-10-06 00:03:50,435 INFO [org.apache.hadoop.mapred.LocalJobRunner] - reduce task executor complete.
+2019-10-06 00:03:51,053 INFO [org.apache.hadoop.mapreduce.Job] - Job job_local1613692079_0001 running in uber mode : false
+2019-10-06 00:03:51,055 INFO [org.apache.hadoop.mapreduce.Job] -  map 100% reduce 100%
+2019-10-06 00:03:51,056 INFO [org.apache.hadoop.mapreduce.Job] - Job job_local1613692079_0001 completed successfully
+2019-10-06 00:03:51,066 INFO [org.apache.hadoop.mapreduce.Job] - Counters: 30
+	File System Counters
+		FILE: Number of bytes read=5801
+		FILE: Number of bytes written=1229286
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=3
+		Map output records=3
+		Map output bytes=398
+		Map output materialized bytes=422
+		Input split bytes=452
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=3
+		Reduce shuffle bytes=422
+		Reduce input records=3
+		Reduce output records=3
+		Spilled Records=6
+		Shuffled Maps =3
+		Failed Shuffles=0
+		Merged Map outputs=3
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=1556611072
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters
+		Bytes Read=126
+	File Output Format Counters
+		Bytes Written=521
+2019-10-06 00:03:51,066 INFO [com.bigdata.hadoop.split.sequence.LinkedDriver] - job1 run success: true
+2019-10-06 00:03:51,090 INFO [org.apache.hadoop.metrics.jvm.JvmMetrics] - Cannot initialize JVM Metrics with processName=JobTracker, sessionId= - already initialized
+2019-10-06 00:03:51,095 WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2019-10-06 00:03:51,100 WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2019-10-06 00:03:51,113 INFO [org.apache.hadoop.mapreduce.lib.input.FileInputFormat] - Total input paths to process : 1
+2019-10-06 00:03:51,138 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:1
+2019-10-06 00:03:51,153 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - Submitting tokens for job: job_local626898714_0002
+2019-10-06 00:03:51,207 INFO [org.apache.hadoop.mapreduce.Job] - The url to track the job: http://localhost:8080/
+2019-10-06 00:03:51,207 INFO [org.apache.hadoop.mapreduce.Job] - Running job: job_local626898714_0002
+2019-10-06 00:03:51,207 INFO [org.apache.hadoop.mapred.LocalJobRunner] - OutputCommitter set in config null
+2019-10-06 00:03:51,208 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:51,208 INFO [org.apache.hadoop.mapred.LocalJobRunner] - OutputCommitter is org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+2019-10-06 00:03:51,209 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Waiting for map tasks
+2019-10-06 00:03:51,209 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local626898714_0002_m_000000_0
+2019-10-06 00:03:51,210 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:51,210 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:51,210 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:51,211 INFO [org.apache.hadoop.mapred.MapTask] - Processing split: file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/out/part-r-00000:0+509
+2019-10-06 00:03:51,272 INFO [org.apache.hadoop.mapred.MapTask] - (EQUATOR) 0 kvi 26214396(104857584)
+2019-10-06 00:03:51,272 INFO [org.apache.hadoop.mapred.MapTask] - mapreduce.task.io.sort.mb: 100
+2019-10-06 00:03:51,272 INFO [org.apache.hadoop.mapred.MapTask] - soft limit at 83886080
+2019-10-06 00:03:51,272 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufvoid = 104857600
+2019-10-06 00:03:51,272 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396; length = 6553600
+2019-10-06 00:03:51,273 INFO [org.apache.hadoop.mapred.MapTask] - Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2019-10-06 00:03:51,279 INFO [org.apache.hadoop.mapred.LocalJobRunner] -
+2019-10-06 00:03:51,280 INFO [org.apache.hadoop.mapred.MapTask] - Starting flush of map output
+2019-10-06 00:03:51,280 INFO [org.apache.hadoop.mapred.MapTask] - Spilling map output
+2019-10-06 00:03:51,280 INFO [org.apache.hadoop.mapred.MapTask] - bufstart = 0; bufend = 210; bufvoid = 104857600
+2019-10-06 00:03:51,280 INFO [org.apache.hadoop.mapred.MapTask] - kvstart = 26214396(104857584); kvend = 26214316(104857264); length = 81/6553600
+2019-10-06 00:03:51,281 INFO [org.apache.hadoop.mapred.MapTask] - Finished spill 0
+2019-10-06 00:03:51,282 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local626898714_0002_m_000000_0 is done. And is in the process of committing
+2019-10-06 00:03:51,283 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map
+2019-10-06 00:03:51,283 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local626898714_0002_m_000000_0' done.
+2019-10-06 00:03:51,284 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local626898714_0002_m_000000_0
+2019-10-06 00:03:51,284 INFO [org.apache.hadoop.mapred.LocalJobRunner] - map task executor complete.
+2019-10-06 00:03:51,284 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Waiting for reduce tasks
+2019-10-06 00:03:51,284 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Starting task: attempt_local626898714_0002_r_000000_0
+2019-10-06 00:03:51,285 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - File Output Committer Algorithm version is 1
+2019-10-06 00:03:51,285 INFO [org.apache.hadoop.yarn.util.ProcfsBasedProcessTree] - ProcfsBasedProcessTree currently is supported only on Linux.
+2019-10-06 00:03:51,285 INFO [org.apache.hadoop.mapred.Task] -  Using ResourceCalculatorProcessTree : null
+2019-10-06 00:03:51,285 INFO [org.apache.hadoop.mapred.ReduceTask] - Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@5fb96af2
+2019-10-06 00:03:51,286 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - MergerManager: memoryLimit=2672505600, maxSingleShuffleLimit=668126400, mergeThreshold=1763853824, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2019-10-06 00:03:51,286 INFO [org.apache.hadoop.mapreduce.task.reduce.EventFetcher] - attempt_local626898714_0002_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2019-10-06 00:03:51,287 INFO [org.apache.hadoop.mapreduce.task.reduce.LocalFetcher] - localfetcher#2 about to shuffle output of map attempt_local626898714_0002_m_000000_0 decomp: 254 len: 258 to MEMORY
+2019-10-06 00:03:51,288 INFO [org.apache.hadoop.mapreduce.task.reduce.InMemoryMapOutput] - Read 254 bytes from map-output for attempt_local626898714_0002_m_000000_0
+2019-10-06 00:03:51,288 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - closeInMemoryFile -> map-output of size: 254, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->254
+2019-10-06 00:03:51,288 INFO [org.apache.hadoop.mapreduce.task.reduce.EventFetcher] - EventFetcher is interrupted.. Returning
+2019-10-06 00:03:51,288 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 1 / 1 copied.
+2019-10-06 00:03:51,288 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2019-10-06 00:03:51,289 INFO [org.apache.hadoop.mapred.Merger] - Merging 1 sorted segments
+2019-10-06 00:03:51,289 INFO [org.apache.hadoop.mapred.Merger] - Down to the last merge-pass, with 1 segments left of total size: 245 bytes
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merged 1 segments, 254 bytes to disk to satisfy reduce memory limit
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merging 1 files, 258 bytes from disk
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapreduce.task.reduce.MergeManagerImpl] - Merging 0 segments, 0 bytes from memory into reduce
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapred.Merger] - Merging 1 sorted segments
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapred.Merger] - Down to the last merge-pass, with 1 segments left of total size: 245 bytes
+2019-10-06 00:03:51,290 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 1 / 1 copied.
+2019-10-06 00:03:51,302 INFO [org.apache.hadoop.mapred.Task] - Task:attempt_local626898714_0002_r_000000_0 is done. And is in the process of committing
+2019-10-06 00:03:51,303 INFO [org.apache.hadoop.mapred.LocalJobRunner] - 1 / 1 copied.
+2019-10-06 00:03:51,303 INFO [org.apache.hadoop.mapred.Task] - Task attempt_local626898714_0002_r_000000_0 is allowed to commit now
+2019-10-06 00:03:51,303 INFO [org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter] - Saved output of task 'attempt_local626898714_0002_r_000000_0' to file:/Users/huhao/softwares/idea_proj/hadoop/hdfs-practice/data/wordcount/out2/_temporary/0/task_local626898714_0002_r_000000
+2019-10-06 00:03:51,304 INFO [org.apache.hadoop.mapred.LocalJobRunner] - reduce > reduce
+2019-10-06 00:03:51,304 INFO [org.apache.hadoop.mapred.Task] - Task 'attempt_local626898714_0002_r_000000_0' done.
+2019-10-06 00:03:51,304 INFO [org.apache.hadoop.mapred.LocalJobRunner] - Finishing task: attempt_local626898714_0002_r_000000_0
+2019-10-06 00:03:51,304 INFO [org.apache.hadoop.mapred.LocalJobRunner] - reduce task executor complete.
+2019-10-06 00:03:52,210 INFO [org.apache.hadoop.mapreduce.Job] - Job job_local626898714_0002 running in uber mode : false
+2019-10-06 00:03:52,211 INFO [org.apache.hadoop.mapreduce.Job] -  map 100% reduce 100%
+2019-10-06 00:03:52,211 INFO [org.apache.hadoop.mapreduce.Job] - Job job_local626898714_0002 completed successfully
+2019-10-06 00:03:52,214 INFO [org.apache.hadoop.mapreduce.Job] - Counters: 30
+	File System Counters
+		FILE: Number of bytes read=7074
+		FILE: Number of bytes written=1226828
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+	Map-Reduce Framework
+		Map input records=3
+		Map output records=21
+		Map output bytes=210
+		Map output materialized bytes=258
+		Input split bytes=155
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=4
+		Reduce shuffle bytes=258
+		Reduce input records=21
+		Reduce output records=4
+		Spilled Records=42
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=0
+		Total committed heap usage (bytes)=1147142144
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters
+		Bytes Read=521
+	File Output Format Counters
+		Bytes Written=44
+2019-10-06 00:03:52,214 INFO [com.bigdata.hadoop.split.sequence.LinkedDriver] - job2 run success: true
+
+Process finished with exit code 0

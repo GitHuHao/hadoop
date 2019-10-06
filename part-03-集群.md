@@ -284,6 +284,12 @@ vim etc/hadoop/yarn-site.xml
 	<name>yarn.log-aggregation.retain-seconds</name>
 	<value>7200</value>
 </property>
+
+<!-- logserver -->
+ <property>
+         <name>yarn.log.server.url</name>
+         <value>http://hadoop02:19888/jobhistory/logs</value>
+</property>
 ----------------------------------------------
 
 启动（在指定机器执行）

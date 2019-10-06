@@ -1,0 +1,4 @@
+spark  data3.txt-->3  data2.txt-->1  data1.txt-->1
+hive  data1.txt-->4  data3.txt-->3  data2.txt-->1
+hello  data3.txt-->3  data1.txt-->2  data2.txt-->1
+hadoop  data1.txt-->3  data3.txt-->2  data2.txt-->1

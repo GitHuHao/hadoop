@@ -1,0 +1,12 @@
+hadoop	data1.txt	3
+hadoop	data2.txt	1
+hadoop	data3.txt	2
+hello	data1.txt	2
+hello	data2.txt	1
+hello	data3.txt	3
+hive	data1.txt	4
+hive	data2.txt	1
+hive	data3.txt	3
+spark	data1.txt	1
+spark	data2.txt	1
+spark	data3.txt	3
