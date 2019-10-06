@@ -61,7 +61,7 @@ MR 作业提交之 MapReduce
 ```
 ![作业提交流程MapReduce.png](image/作业提交流程MapReduce.png)
 
-[WordCount实例](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/mr/wordcount/local)
+[WordCount实例](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/mr/wordcount)
 ``` 
 WCMapper 
 WCReducer
@@ -69,7 +69,7 @@ WCDriver
 ```
 
 
-[自定义奇偶分区](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/mr/partitioner/local)
+[自定义奇偶分区](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/mr/partitioner)
 ``` 
 AsciiSortDriver
 AsciiSortMapper
@@ -87,7 +87,7 @@ map 输出 kv，先进入环形缓冲区，当累计量到达阈值80%，溢写�
 会出现异常，当 reduce task =1 时，不进行分区，产生一个结果文件
 ```
 
-[预聚合](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/mr/combiner/local)
+[预聚合](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/mr/combiner)
 ``` 
 Combiner
 CombinerDriver1
@@ -125,7 +125,7 @@ Map-Reduce Framework
 ```
 ![预聚合效果.png](image/预聚合效果.png)
 
-[分片优化（合并小文件）](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/mr/split/local)
+[分片优化（合并小文件）](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/mr/split)
 ``` 
 WCDriver
 WCMapper
@@ -163,7 +163,7 @@ array -> ArrayWritable
 5.bean 需要作为 key传输时，要实现 Comparable 接口，因为 shufle 过程会对key 进行排序
 ```
 
-[手机上行流量，下行流量，总流量统计](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/bean/wordcount/local)
+[手机上行流量，下行流量，总流量统计](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/bean/wordcount)
 
 ``` 
 FlowBean
@@ -172,13 +172,13 @@ SumMapper
 SumReducer
 ```
 
-[全局排序](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/bean/globalsort/local)
+[全局排序](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/bean/globalsort)
 ``` 
 FlowBean
 GlobalSortDriver
 ```
 
-[自定义分区](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/bean/partitioner/local)
+[自定义分区](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/bean/partitioner)
 ``` 
 FlowBean
 ProvincePartitioner
@@ -187,19 +187,19 @@ SumMapper
 SumReducer
 ```
 
-[分区排序](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/bean/partitionsort/local)
+[分区排序](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/bean/partitionsort)
 ``` 
 FlowBean
 PartitionSortDriver
 ```
 
-[辅助排序取最大值](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/bean/groupingcomparator/local)
+[辅助排序取最大值](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/bean/groupingcomparator)
 ``` 
 MaxPriceItemDriver
 OrderBean
 ```
 
-[MR实现 reduce 端JOIN 操作](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/join/reduceside/local)
+[MR实现 reduce 端JOIN 操作](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/join/reduceside)
 ```
 JoinDriver
 JoinMapper
@@ -209,7 +209,7 @@ TableBean
 容易出现数据倾斜
 ```
 
-[MR实现 map 端JOIN 操作](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/join/mapside/local)
+[MR实现 map 端JOIN 操作](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/join/mapside)
 ```
 JoinDriver
 JoinMapper
@@ -218,7 +218,7 @@ TableBean
 使用分布式缓存策略，提交计算效率
 ```
 
-[MR小文件优化(合并文件作为一个切片)](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/split/combine/local)
+[MR小文件优化(合并文件作为一个切片)](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/split/combine)
 ```
 WCDriver
 WCMapper
@@ -227,7 +227,7 @@ WCReducer
 输入选用CombineTextInputFormat，通过设置上下界，按从小到大顺序合并小文件，减少 map task 个数，提高计算效率 
 ```
 
-[MR小文件优化(先使用 MR合并小文件，然后在对合并后文件进行 MR 计算)](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/split/sequence/local)
+[MR小文件优化(先使用 MR合并小文件，然后在对合并后文件进行 MR 计算)](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/split/sequence)
 ```
 自定义输入格式(文件不分片，且分片整体一次性读取)
 WholeRecordReader
@@ -246,7 +246,7 @@ WCReducer
 LinkedDriver
 ```
 
-[MR过滤分流文件](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/filter/output/local)
+[MR过滤分流文件](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/filter/output)
 ```
 ContentFilterDriver
 ContentFilterOutputFormat
@@ -254,13 +254,13 @@ ContentFilterWriter
 基于关键字分流文件
 ```
 
-[MR简单日志清洗](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/filter/logclean/local)
+[MR简单日志清洗](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/filter/logclean)
 ```
 LogDriver
 LogMapper
 ```
 
-[MR复杂日志清洗](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/filter/logclean2/local)
+[MR复杂日志清洗](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/filter/logclean2)
 ```
 LogBean
 LogDriver
@@ -268,7 +268,7 @@ LogMapper
 TestSplit
 ```
 
-[MR倒排索引(分区取决于bean compareTo)](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/reversed/index1/local)
+[MR倒排索引(分区取决于bean compareTo)](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/reversed/index1)
 ```
 GatherDriver
 GatherMapper
@@ -279,7 +279,7 @@ WCReducer
 WordBean
 ```
 
-[MR倒排索引(分区取决于辅助排序 compare)](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/reversed/index2/local)
+[MR倒排索引(分区取决于辅助排序 compare)](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/reversed/index2)
 ```
 GatherDriver
 GatherGroupingComparator
@@ -290,8 +290,8 @@ WCMapper
 WCReducer
 WordBean
 ```
-
-[MR求共同好友](https://github.com/GitHuHao/hadoop/blob/master/hdfs-practice/src/com/bigdata/hadoop/hdfs-practice/src/com/bigdata/hadoop/friend/shared/local)
+https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/friend/shared
+[MR求共同好友](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/friend/shared)
 ```
 FriendMeDriver
 FriendMeMapper
