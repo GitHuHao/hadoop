@@ -432,7 +432,7 @@ numChildren = 1
 
 ![znode-参数.png](image/znode-参数.png)
 
-[ZookeeperAPI](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/zookeeper/exec/ZkTest)
+[ZookeeperAPI](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/zookeeper/exec)
 ``` 
 Transaction
 ZkTest
