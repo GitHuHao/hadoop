@@ -290,7 +290,7 @@ WCMapper
 WCReducer
 WordBean
 ```
-https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/friend/shared
+
 [MR求共同好友](https://github.com/GitHuHao/hadoop/tree/master/hdfs-practice/src/com/bigdata/hadoop/friend/shared)
 ```
 FriendMeDriver
