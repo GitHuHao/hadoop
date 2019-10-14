@@ -443,7 +443,7 @@ ZkTest
 WatchTest
 ```
 
-![zookeeperWatch参照表.png](zookeeperWatch参照表.png)
+![zookeeperWatch参照表.png](image/zookeeperWatch参照表.png)
 
 Zookeeper Watch
 ``` 
